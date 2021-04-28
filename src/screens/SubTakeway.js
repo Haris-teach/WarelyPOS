@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, Text, TouchableOpacity, View, ScrollView, TextInput, SliderComponent } from 'react-native';
+import { FlatList, Image, Text, Modal, TouchableOpacity, View, ScrollView, TextInput, SliderComponent } from 'react-native';
 import MainDashborad from './Dinning';
 import Burger from './Burger';
 import Pay from './Pay';
@@ -14,6 +14,9 @@ var tableIds = "";
 
 const SubTakeway = (props) => {
     const [selectedIndex, setSelectedIndex] = useState(-1);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [productItem, setProductItem] = useState({});
+    const [variantArray, setVariantArray] = useState([]);
 
     const [state, setState] = useState('sub');
     const [loading, setLoading] = useState(false);
@@ -73,8 +76,8 @@ const SubTakeway = (props) => {
         setData(array);
         setDi(Dis);
     };
-    const newArray = (Id, pr, Dis) => {
 
+    const newArray = (Id, pr, Dis) => {
         let index = array.indexOf(item => item.key == Id)
         array.splice(index, 0);
 
@@ -82,10 +85,7 @@ const SubTakeway = (props) => {
 
         setP(p - pr);
         setD(d - parseInt(Dis));
-
     }
-
-
 
     const Empty = () => {
         Total = 0;
@@ -136,14 +136,10 @@ const SubTakeway = (props) => {
                 console.error(error);
             });
 
-
         fetch('http://warly2.sapphost.com/public/api/cat?token=$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82')
             .then((response) => response.json())
             .then((json) => setCat(json))
             .catch((error) => console.error(error));
-
-
-
     }, [loading]);
 
     const callback = () => {
@@ -305,14 +301,6 @@ const SubTakeway = (props) => {
                     <Text style={styles.textStyle}>{item.qty}</Text>
                 </TouchableOpacity>
 
-                {/* <View style={[styles.viewStyle, { borderWidth: 0.5 }]}>
-                                                        <TextInput
-                                                            onChangeText={(text) => item.qty = text}
-                                                            value={item.qty}
-                                                        />
-                                                    </View> */}
-
-
                 <View style={styles.viewStyle}>
                     <Text style={styles.textStyle}>{item.dis}</Text>
                 </View>
@@ -328,6 +316,75 @@ const SubTakeway = (props) => {
             </View>
         );
     };
+
+    const renderVariantModal = () => {
+        return (
+
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}>
+                <View style={{
+                    height: "100%",
+                    width: "100%",
+                    backgroundColor: "rgba(0,0,0,0.7)",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}>
+                    <View style={{ width: '50%', backgroundColor: 'white', }}>
+                        <FlatList
+                            data={variantArray}
+                            keyExtractor={(item) => item.key}
+                            ListHeaderComponent={() => {
+                                return (
+                                    <View style={{ flexDirection: "row", margin: 5, justifyContent: 'space-between' }}>
+                                        <Text style={{ fontWeight: 'bold' }}>Variant Name</Text>
+                                        <Text style={{ fontWeight: 'bold' }}>Price</Text>
+                                    </View>
+                                );
+                            }}
+                            ItemSeparatorComponent={() => {
+                                return (
+                                    <View style={{
+                                        marginHorizontal: 5,
+                                        borderWidth: 0.25,
+                                        borderColor: 'rgba(0,0,0,0.3)'
+                                    }} />
+                                );
+                            }}
+                            renderItem={({ item, index }) => {
+                                return (
+                                    <TouchableOpacity style={{ flexDirection: "row", margin: 5, justifyContent: 'space-between' }}
+                                        onPress={() => {
+                                            addNewItem(productItem.name, item.price, productItem.discount, productItem.id, item.id);
+                                            setProductItem({});
+                                            setVariantArray([]);
+                                            setModalVisible(false);
+                                        }}>
+                                        <Text>{item.name}</Text>
+                                        <Text>{item.price + " $"}</Text>
+                                    </TouchableOpacity>
+                                );
+                            }}
+                        />
+
+                        <TouchableOpacity style={{ margin: 5, padding: 5, alignItems: 'center', backgroundColor: 'black' }}
+                            onPress={() => {
+                                setModalVisible(false);
+                            }}>
+                            <Text style={{ color: 'white' }}>Cancel</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+        );
+    };
+
+    const variantCallback = (item) => {
+        setModalVisible(true);
+        setProductItem(item);
+        setVariantArray(item.var);
+    }
 
     // <Pay pay={Total} branch={br} D={data} userid={props.userId} t_id={table_id} member={count} reload={reload} addNewItem={addNewItem} Empty={Empty}  Call={callback} function={fun} statename={props.pass} />
     return (
@@ -510,7 +567,6 @@ const SubTakeway = (props) => {
                     </View>
 
                     <View style={{ flex: 0.1, backgroundColor: 'rgb(240,240,240)', }}>
-
                         <FlatList
                             data={cat}
                             keyExtractor={item => item.key}
@@ -524,52 +580,12 @@ const SubTakeway = (props) => {
                                         <Text style={styles.CardText}>{item.name}</Text>
                                     </TouchableOpacity>)
                             }}
-
                         />
                     </View>
 
-                    {/* <View style={{ flex: 0.1, backgroundColor: 'rgb(240,240,240)' }}>
-
-                                <View style={{ flexDirection: 'column', alignSelf: 'center' }}>
-                                    <TouchableOpacity style={[styles.Card, { backgroundColor: 'red' }]} onPress={() => setSelect('promo')}>
-
-                                        <Text style={styles.CardText}>Promo</Text>
-
-
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity style={[styles.Card, { backgroundColor: '#ffbf00' }]} onPress={() => setSelect('reward')}>
-
-                                        <Text style={styles.CardText}>Rewards</Text>
-
-
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity style={[styles.Card, { backgroundColor: 'gray' }]} onPress={() => setSelect('burger')}>
-
-                                        <Text style={styles.CardText}>Burgers</Text>
-
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity style={[styles.Card, { backgroundColor: 'blue' }]} onPress={() => setSelect('side')}>
-
-                                        <Text style={styles.CardText}>Sides</Text>
-
-
-                                    </TouchableOpacity>
-
-                                </View>
-
-                            </View> */}
-
-
-
-
-
-
                     <View style={{ flex: 0.5, backgroundColor: 'white' }}>
 
-                        {select === 'Burger' ? <Burger reload={reload} addNewItem={addNewItem} branch={br} Cat_id={cat_id} /> : select === 'Pay' ? <Pay pay={Total} branch={br} D={data} userid={props.userId} t_id={table_id} member={count} reload={reload} addNewItem={addNewItem} Empty={Empty} Call={callback} function={fun} statename={props.pass} Cat_id={cat_id} /> : select == 'cash' ?
+                        {select === 'Burger' ? <Burger variantCallback={variantCallback} reload={reload} addNewItem={addNewItem} branch={br} Cat_id={cat_id} /> : select === 'Pay' ? <Pay pay={Total} branch={br} D={data} userid={props.userId} t_id={table_id} member={count} reload={reload} addNewItem={addNewItem} Empty={Empty} Call={callback} function={fun} statename={props.pass} Cat_id={cat_id} /> : select == 'cash' ?
 
                             <>
                                 <View style={{ borderBottomWidth: 0.4, height: 50, flexDirection: 'row', backgroundColor: 'rgb(240,240,240)' }}>
@@ -633,11 +649,7 @@ const SubTakeway = (props) => {
                                                 onPress={() => concatinate('6')}>
                                                 <Text style={{ alignSelf: 'center', fontSize: 25, fontWeight: 'bold', }}>6</Text>
                                             </TouchableOpacity>
-
-
                                         </View>
-
-
 
                                         <View style={{ flexDirection: 'row', width: '98%', borderWidth: 1, backgroundColor: 'white' }}>
 
@@ -702,18 +714,11 @@ const SubTakeway = (props) => {
                             </> : null}
 
                     </View>
-
-
-
-
-
-
-
-
-
                 </View> : state == 'Takeway' ?
                     <Takeway branch={br} idUser={props.userId} /> : state == 'Main' ? <MainDashborad br={br} Key={Id} /> : null
             }
+
+            {renderVariantModal()}
         </>
     );
 }

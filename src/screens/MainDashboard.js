@@ -271,7 +271,7 @@ const Dinning = ({ route }) => {
 
   const renderModal = () => {
     return (
-      <View style={styles.centeredView}>
+      <View>
         <Modal
           animationType="fade"
           transparent={true}

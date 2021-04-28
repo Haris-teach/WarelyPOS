@@ -3,76 +3,6 @@ import { View, Text, TextInput, TouchableOpacity, Image, FlatList } from 'react-
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
-const Data = [
-    {
-        key: '1',
-        item: "Classic Cheese",
-        Discount: "12:20 PM",
-        total: "01",
-        bcolor: 'rgb(240,240,240)',
-
-        b: 'Burger',
-        p: 2.50
-    },
-    {
-        key: '2',
-
-        Discount: "12:20 PM",
-        total: "01",
-        item: 'Classic Cheese',
-        b: 'Burger',
-        p: 2.50
-
-    },
-    {
-        key: '3',
-
-        Discount: "12:20 PM",
-        total: "01",
-        bcolor: 'rgb(240,240,240)',
-        item: 'Classic Cheese',
-        b: 'Burger',
-        p: 2.50
-
-    },
-    {
-        key: '4',
-
-        Discount: "12:20 PM",
-        total: "01",
-        item: 'Classic Cheese',
-        b: 'Burger',
-        p: 2.50
-
-
-    },
-    {
-        key: '5',
-
-        Discount: "12:20 PM",
-        total: "01",
-        bcolor: 'rgb(240,240,240)',
-        item: 'Classic Cheese',
-        b: 'Burger',
-        p: 2.50
-
-    },
-    {
-        key: '6',
-        Discount: "12:20 PM",
-        total: "01",
-        item: 'Classic Cheese',
-        b: 'Burger',
-        p: 2.50
-
-    },
-
-
-
-];
-
-
-
 const Burger = (props) => {
 
     const [items, setItems] = useState([]);
@@ -138,22 +68,23 @@ const Burger = (props) => {
                     style={{ alignSelf: 'center' }}
                     numColumns={3}
                     renderItem={({ item }) => (
-                        <>
+                        <TouchableOpacity style={{ width: wp('12%'), height: hp('18%'), backgroundColor: 'rgb(240,240,240)', marginRight: '2%', marginBottom: '1%', marginTop: hp('2%'), borderRadius: 4, justifyContent: 'flex-end' }}
+                            onPress={() => {
+                                if (item.type === 'single') {
+                                    props.addNewItem(item.name, item.price, item.discount, item.id, item.var_id)
+                                } else {
+                                    props.variantCallback(item);
+                                }
+                            }}>
+                            <View style={{ alignSelf: 'center', marginTop: 5 }}>
+                                <Text style={{ fontSize: wp('1.5%'), alignSelf: 'center' }}>{item.name}</Text>
+                                <Text style={{ fontSize: wp('1.5%'), alignSelf: 'center', marginTop: 20, fontWeight: 'bold' }}></Text>
+                            </View>
+                            <View style={{ height: hp('3%'), backgroundColor: '#696969', }}>
+                                <Text style={{ fontSize: wp('1.1%'), alignSelf: 'center', color: 'white' }}>{item.price}</Text>
+                            </View>
 
-                            <TouchableOpacity style={{ width: wp('12%'), height: hp('18%'), backgroundColor: 'rgb(240,240,240)', marginRight: '2%', marginBottom: '1%', marginTop: hp('2%'), borderRadius: 4, justifyContent: 'flex-end' }}
-                                onPress={() => props.addNewItem(item.name, item.price, item.discount, item.id, item.var_id)}>
-                                <View style={{ alignSelf: 'center', marginTop: 5 }}>
-                                    <Text style={{ fontSize: wp('1.5%'), alignSelf: 'center' }}>{item.name}</Text>
-                                    <Text style={{ fontSize: wp('1.5%'), alignSelf: 'center', marginTop: 20, fontWeight: 'bold' }}></Text>
-                                </View>
-                                <View style={{ height: hp('3%'), backgroundColor: '#696969', }}>
-                                    <Text style={{ fontSize: wp('1.1%'), alignSelf: 'center', color: 'white' }}>{item.price}</Text>
-                                </View>
-
-                            </TouchableOpacity>
-
-
-                        </>
+                        </TouchableOpacity>
                     )}
                 />
             </View>
