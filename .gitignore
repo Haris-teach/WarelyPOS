@@ -61,6 +61,8 @@ output.json
 obj/
 .externalNativeBuild
 
+*.hprof
+
 # node.js
 #
 node_modules/
