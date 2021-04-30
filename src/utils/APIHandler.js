@@ -6,6 +6,8 @@ export default class APIHandler {
             ? params.Token = '$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82'
             : url = url + "?token=$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82";
 
+        console.log(url)
+
         var options = {
             url,
             method: apiMethod,

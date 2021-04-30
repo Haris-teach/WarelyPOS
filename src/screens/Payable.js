@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Modal, Image } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import APIHandler from '../utils/APIHandler';
+import { Table_res, Takeaway_Order } from '../utils/urls';
 
 const Payable = (props) => {
     let Recived = props.Value;
@@ -17,65 +19,37 @@ const Payable = (props) => {
 
 
     const Save = () => {
-        fetch("https://warly2.sapphost.com/public/api/order_saved", {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
 
-            body: JSON.stringify({
+        let params = {
+            total: Total,
+            loc_id: br,
+            stf_id: props.userid,
+            Data: Data,
+        };
 
-                'Token': token,
-                'total': Total,
-                'loc_id': br,
-                'stf_id': props.userid,
-                'Data': Data,
-            })
-        }).
-            then(res => res.json()).
-            then(json => {
-                console.log(json);
-            }).
-            catch((error) => {
-                console.error(error);
-
-            });
+        APIHandler.hitApi(Takeaway_Order, 'POST', params).then(response => console.log(response));
         console.log("Takeaway order done")
 
     };
 
     const fun = () => {
 
-        fetch("https://warly2.sapphost.com/public/api/table_res", {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
+        let param = {
+            total: props.total,
+            loc_id: props.branch,
+            t_id: props.table_id,
+            mem: props.count,
+            stf_id: props.userid,
+            Data: props.D,
+        };
 
-            body: JSON.stringify({
+        APIHandler.hitApi(Table_res, 'POST', param).then(response => console.log(response));
 
-                'Token': token,
-                'total': props.total,
-                'loc_id': props.branch,
-                't_id': props.table_id,
-                'mem': props.count,
-                'stf_id': props.userid,
-                'Data': props.D,
-            })
-        }).
-            then(res => res.json()).
-            then(json => {
-                console.log(json);
-            }).
-            catch((error) => {
-                console.error(error);
-            });
+
         console.log("Table order done",)
 
     }
-    console.log(props.table_id)
+
 
     return (
 

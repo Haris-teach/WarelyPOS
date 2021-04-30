@@ -1,56 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  Image,
-  ToastAndroid,
-  FlatList
+  FlatList, Image, StyleSheet, Text,
+
+
+
+  TouchableOpacity, View
 } from "react-native";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-
 import DropDownPicker from "react-native-dropdown-picker";
-import { Branch_User, Branches } from "../utils/urls";
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import APIHandler from "../utils/APIHandler";
-
-
-const Data = [
-  {
-    key: '1',
-    name: 'xyz',
-  },
-  {
-    key: '2',
-    name: 'xyz',
-  },
-  {
-    key: '3',
-    name: 'xyz',
-  },
-  {
-    key: '4',
-    name: 'xyz',
-  },
-  {
-    key: '5',
-    name: 'xyz',
-  },
-  {
-    key: '6',
-    name: 'xyz',
-  },
-  {
-    key: '7',
-    name: 'xyz',
-  },
-  {
-    key: '8',
-    name: 'xyz',
-  },
-];
-
+import { Branches, Branch_User } from "../utils/urls";
 
 const Login = ({ navigation }) => {
 
@@ -73,51 +32,12 @@ const Login = ({ navigation }) => {
     });
   };
 
-  // const getData = (branchId) => {
-  //   fetch("http://warly2.sapphost.com/public/api/branch_user", {
-  //     method: 'POST',
-  //     headers: {
-  //       Accept: 'application/json',
-  //       'Content-Type': 'application/json'
-  //     },
 
-  //     body: JSON.stringify({
-  //       "Token": token,
-  //       "Branch": branchId,
-  //     })
-  //   }).
-  //     then(res => res.json()).
-  //     then(response => {
-
-
-  //       response && setData(response);
-  //     }).
-  //     catch((error) => {
-  //       console.error(error);
-  //     });
-
-
-
-
-
-
-  // }
 
   useEffect(() => {
-
-
-    fetch('http://warly2.sapphost.com/public/api/get_branch?token=$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82')
-      .then((response) => response.json())
-      .then((json) => setItems(json))
-      .catch((error) => console.error(error));
-    // let params = {
-
-    // };
-
-    // APIHandler.hitApi(Branches, 'get', params).then(response => {
-    //   setItems(response);
-    // });
-
+    APIHandler.hitApi(Branches, 'GET').then(response => {
+      setItems(response);
+    });
   }, []);
 
 
@@ -147,7 +67,7 @@ const Login = ({ navigation }) => {
           </View>
           <DropDownPicker
             items={items}
-            //controller={instance => controller.current = instance}
+
 
             defaultValue={value}
             placeholder="Select a Branch"
@@ -191,8 +111,6 @@ const Login = ({ navigation }) => {
               </>
             )}
           />
-
-
 
         </View>
       </View>

@@ -8,7 +8,7 @@ import Takeway from './Takeway';
 import RNPrint from 'react-native-print';
 import * as Animatable from 'react-native-animatable';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Print_Slip, Table_res, Takeaway_Order } from '../utils/urls';
+import { Print_Slip, Table_res, Takeaway_Order, PRODUCT_CAT } from '../utils/urls';
 import APIHandler from '../utils/APIHandler';
 
 var tableNames = "";
@@ -136,19 +136,21 @@ const SubTakeway = (props) => {
 
         APIHandler.hitApi(Print_Slip, 'POST', param).then(response => setSlip(response));
 
-        fetch('http://warly2.sapphost.com/public/api/cat?token=$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82')
-            .then((response) => response.json())
-            .then((json) => setCat(json))
-            .catch((error) => console.error(error));
+        APIHandler.hitApi(PRODUCT_CAT, 'GET').then(response => setCat(response));
+
     }, [loading]);
 
     const callback = () => {
         setSelect('Burger');
     };
 
+
+
     const print = async printRemotePDF => {
         await RNPrint.print({ filePath: slip.url })
     }
+
+
 
     const concatinate = (v) => {
         let localArr = [...array];
@@ -537,7 +539,11 @@ const SubTakeway = (props) => {
                                 <View style={{ borderBottomWidth: 0.4, height: 50, flexDirection: 'row', backgroundColor: 'rgb(240,240,240)' }}>
                                     <Text style={{ alignSelf: 'center', flex: 1, fontSize: wp('1.4%'), marginLeft: 30 }}>Changing Quantity</Text>
 
-                                    <Text style={{ fontSize: wp('1.4 %'), alignSelf: 'center', marginRight: 20 }} onPress={() => setSelect('Burger')}>Back</Text>
+                                    <Text style={{ fontSize: wp('1.4 %'), alignSelf: 'center', marginRight: 20 }} onPress={() => {
+
+                                        setSelect('Burger');
+                                        setValue('');
+                                    }}>Back</Text>
                                 </View>
 
                                 <View style={{ backgroundColor: 'rgb(230,240,230)', height: 30, flexDirection: 'row', justifyContent: 'center' }}>
