@@ -12,5 +12,7 @@ export const Order_History = BASE_URL + "order_comp";
 export const Table_res = BASE_URL + "table_res";
 export const Takeaway_Order = BASE_URL + "order_saved";
 export const Print_Slip = BASE_URL + "print";
+export const PRODUCT_CAT = BASE_URL + "cat";
+
 
 
