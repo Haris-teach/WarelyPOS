@@ -226,6 +226,7 @@ const SubTakeway = (props) => {
                     onPress={() => {
                         setSelect('cash');
                         setSelectedIndex(index);
+                        setValue('');
                     }}>
                     <Text style={styles.textStyle}>{item.qty}</Text>
                 </TouchableOpacity>

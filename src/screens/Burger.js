@@ -13,10 +13,15 @@ const Burger = (props) => {
 
     const [search, setSearch] = useState('');
     const [state, setState] = useState(false);
-    const Search = (s) => {
-        obj = items.find(o => o.name === s);
 
-        console.log(obj);
+    const Search = () => {
+        let term = search;
+        let obj = items.filter(item => item.name.toLowerCase().indexOf(term) > -1);
+
+        // obj = items.find(o => o.name === s);
+
+        setItems(obj);
+
 
     }
 
@@ -44,7 +49,6 @@ const Burger = (props) => {
                 <TouchableOpacity onPress={() => {
                     Search(search);
                     setState(true);
-                    setSearch('');
                 }}>
                     <Image source={require('../assets/se.jpg')} style={{ width: 25, height: 25, marginTop: 10 }} />
                 </TouchableOpacity>
