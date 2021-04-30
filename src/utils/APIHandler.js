@@ -2,7 +2,9 @@ import axios from "axios";
 
 export default class APIHandler {
     static hitApi(url, apiMethod, params) {
-        params.Token = '$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82';
+        (apiMethod === 'POST' && params && params != null)
+            ? params.Token = '$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82'
+            : url = url + "?token=$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82";
 
         var options = {
             url,
@@ -12,7 +14,7 @@ export default class APIHandler {
                 'Content-Type': 'application/json'
             },
             data: params ? params : ''
-        }
+        };
 
         var axiosClient = axios(options).then(response => {
             console.log("API respones", response.data);

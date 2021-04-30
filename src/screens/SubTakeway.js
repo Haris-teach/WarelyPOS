@@ -67,8 +67,6 @@ const SubTakeway = (props) => {
 
 
     const addNewItem = (name, price, Dis, id, Var) => {
-
-
         const obj = { 'key': i, 'item': name, 'p': price, 'dis': Dis, 'qty': 1, "id": id, 'var_id': Var };
         setP(p + parseInt(price));
         setD(d + parseInt(Dis))
