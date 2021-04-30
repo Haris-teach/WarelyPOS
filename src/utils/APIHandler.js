@@ -16,7 +16,7 @@ export default class APIHandler {
                 'Content-Type': 'application/json'
             },
             data: params ? params : ''
-        }
+        };
 
         var axiosClient = axios(options).then(response => {
             console.log("API respones", response.data);
