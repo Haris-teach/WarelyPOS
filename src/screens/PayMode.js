@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Pay from './Pay';
 import Cash from './Cash';
 import Card from './Card';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const Paymode = (props) => {
     const [state, setState] = useState('');
@@ -19,7 +20,7 @@ const Paymode = (props) => {
                 <>
 
                     <View style={{ alignSelf: 'center', marginTop: '10%' }}>
-                        <Text style={{ fontSize: 13, color: 'red' }}>PAYMENT MODE</Text>
+                        <Text style={{ fontSize: wp('1.5%'), color: 'red' }}>PAYMENT MODE</Text>
                     </View>
 
 
@@ -33,7 +34,7 @@ const Paymode = (props) => {
 
                         <View
                             style={{
-                                marginTop: 15,
+                                marginTop: wp('1.5%'),
                                 flexDirection: "row",
                                 flex: 1
                             }}
@@ -43,8 +44,8 @@ const Paymode = (props) => {
                                     justifyContent: "center",
                                     flexDirection: "column",
                                     alignItems: "center",
-                                    marginLeft: 30,
-                                    marginBottom: 20
+                                    marginLeft: wp('1.5%'),
+                                    marginBottom: wp('1.5%'),
                                 }}
                             >
                                 <TouchableOpacity
@@ -62,8 +63,8 @@ const Paymode = (props) => {
                                     justifyContent: "center",
                                     flexDirection: "column",
                                     alignItems: "center",
-                                    marginRight: 30,
-                                    marginBottom: 20,
+                                    marginRight: wp('1.5%'),
+                                    marginBottom: wp('1.5%'),
                                 }}
                             >
                                 <TouchableOpacity style={styles.ButtonView2} onPress={() => {
@@ -92,8 +93,8 @@ const styles = StyleSheet.create({
 
     container1: {
         borderRadius: 10,
-        marginRight: 20,
-        marginLeft: 20,
+        marginRight: wp('1.5%'),
+        marginLeft: wp('1.5%'),
         alignItems: "center",
         alignSelf: 'center',
         borderWidth: 2,
@@ -104,15 +105,15 @@ const styles = StyleSheet.create({
     TextStyle: {
         color: "black",
         fontWeight: "bold",
-        fontSize: 20,
+        fontSize: wp('1.5%'),
     },
     ButtonView: {
         borderRadius: 5,
         alignSelf: "center",
         justifyContent: "center",
-        width: 115,
-        height: 45,
-        marginLeft: 10,
+        width: wp('13%'),
+        height: hp('8%'),
+        marginLeft: wp('0.1%'),
         alignItems: "center",
         backgroundColor: "#74bf64",
     },
@@ -120,9 +121,9 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         alignSelf: "center",
         justifyContent: "center",
-        width: 115,
-        height: 45,
-        marginLeft: 10,
+        width: wp('13%'),
+        height: hp('8%'),
+        marginLeft: wp('1.5%'),
         alignItems: "center",
         backgroundColor: "red",
     },
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
         color: "#ffffff",
         fontWeight: "bold",
         marginTop: 5,
-        fontSize: 12,
+        fontSize: wp('1.5%'),
     },
 
 });

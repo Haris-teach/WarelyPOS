@@ -5,6 +5,7 @@ import {
     Drawer,
     Text
 } from 'react-native-paper';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const DrawerNavigate = (props) => {
     return (
@@ -12,7 +13,7 @@ const DrawerNavigate = (props) => {
             <Drawer.Section style={styles.drawerSection}>
                 <DrawerItem
                     icon={() => (
-                        <Image source={require('../assets/Logo.jpg')} style={{ alignContent: 'center', width: "100%", height: 50 }} resizeMode='contain' />
+                        <Image source={require('../assets/Logo.jpg')} style={{ alignItems: 'center', width: wp('16%'), height: hp('10%') }} resizeMode='contain' />
                     )}
                     label={"1"}
                 />
@@ -72,7 +73,7 @@ const Lable1 = () => {
     return (
 
         <View style={styles.boxStyle}>
-            <Text style={{ fontSize: 8, alignSelf: 'center', marginTop: 5, fontWeight: 'bold' }}>HOME</Text>
+            <Text style={{ fontSize: wp('1.2%'), alignSelf: 'center', fontWeight: 'bold' }}>HOME</Text>
         </View>
 
 
@@ -83,7 +84,7 @@ const Lable2 = () => {
     return (
 
         <View style={styles.boxStyle}>
-            <Text style={{ fontSize: 8, alignSelf: 'center', marginTop: 5, fontWeight: 'bold' }}>SALE HISTORY</Text>
+            <Text style={{ fontSize: wp('1.2%'), alignSelf: 'center', marginTop: 5, fontWeight: 'bold' }}>SALE HISTORY</Text>
         </View>
 
 
@@ -94,7 +95,7 @@ const Lable3 = () => {
     return (
 
         <View style={styles.boxStyle}>
-            <Text style={{ fontSize: 8, alignSelf: 'center', marginTop: 5, fontWeight: 'bold' }}>SHIFT</Text>
+            <Text style={{ fontSize: wp('1.2%'), alignSelf: 'center', marginTop: 5, fontWeight: 'bold' }}>SHIFT</Text>
         </View>
 
 
@@ -105,7 +106,7 @@ const Lable4 = () => {
     return (
 
         <View style={styles.boxStyle}>
-            <Text style={{ fontSize: 8, alignSelf: 'center', marginTop: 5, fontWeight: 'bold' }}>SETTING</Text>
+            <Text style={{ fontSize: wp('1.2%'), alignSelf: 'center', marginTop: 5, fontWeight: 'bold' }}>SETTING</Text>
         </View>
 
 
@@ -119,13 +120,13 @@ const Lable6 = () => {
 
 
             borderRadius: 2,
-            width: 125,
-            height: 35,
+            width: wp('20%'),
+            height: hp('5%'),
             alignSelf: 'center',
             marginTop: -13,
             backgroundColor: 'red'
         }}>
-            <Text style={{ fontSize: 12, color: 'white', alignSelf: 'center', marginTop: 10, fontWeight: 'bold' }}>CLOSE SALE</Text>
+            <Text style={{ fontSize: wp('1.2%'), color: 'white', alignSelf: 'center', marginTop: 10, fontWeight: 'bold' }}>CLOSE SALE</Text>
         </View>
 
     );
@@ -137,19 +138,20 @@ const styles = StyleSheet.create({
     drawerContent: {
         flex: 1,
         alignSelf: 'center',
+        justifyContent: 'center'
     },
     drawerSection: {
         marginTop: 2,
-        marginLeft: "10%"
+        marginLeft: "10%",
+        alignSelf: 'center'
 
     },
     boxStyle: {
-        marginLeft: 15,
         borderWidth: 2,
         borderRadius: 6,
-        width: 125,
-        height: 25,
-
+        width: wp('15%'),
+        height: hp('5%'),
+        justifyContent: 'center',
         marginTop: -13,
         alignSelf: 'center',
     }

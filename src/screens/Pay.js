@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Burger from './Burger';
 import Paymode from './PayMode';
 
@@ -14,7 +15,7 @@ const Pay = (props) => {
     const br = props.branch;
     const Data = props.D;
 
-    console.log(props.userid)
+
 
 
 
@@ -25,78 +26,78 @@ const Pay = (props) => {
                     <ScrollView style={{ flex: 2 }}>
 
 
-                        <Text style={{ margin: 10, fontWeight: 'bold' }}>Discount options</Text>
+                        <Text style={{ margin: wp('1%'), fontWeight: 'bold', fontSize: wp('1.5%') }}>Discount options</Text>
 
-                        <View style={{ flexDirection: 'row', marginLeft: 30, marginRight: 30, justifyContent: 'space-around', marginTop: '10%' }}>
+                        <View style={{ flexDirection: 'row', marginLeft: wp('1.5%'), marginRight: wp('1.5%'), justifyContent: 'space-around', marginTop: '10%' }}>
                             {btn == '1' ?
-                                <View style={{ width: '48%' }}>
+                                <View style={{ width: wp('18%') }}>
                                     <TouchableOpacity style={[styles.btnStyle, { backgroundColor: 'red' }]} onPress={() => setBtn('1')} >
                                         <Text style={[styles.Tstyle, { color: 'white' }]}>Student discount</Text>
                                     </TouchableOpacity>
                                 </View>
-                                : <View style={{ width: '48%' }}>
+                                : <View style={{ width: wp('18%') }}>
                                     <TouchableOpacity style={[styles.btnStyle, { backgroundColor: 'white' }]} onPress={() => setBtn('1')} >
-                                        <Text style={[styles.Tstyle, { color: 'black' }]}>Student discount</Text>
+                                        <Text style={[styles.Tstyle, { color: 'red' }]}>Student discount</Text>
                                     </TouchableOpacity>
                                 </View>}
 
                             {btn == '2' ?
-                                <View style={{ width: '48%' }}>
+                                <View style={{ width: wp('18%') }}>
                                     <TouchableOpacity style={[styles.btnStyle, { backgroundColor: 'red' }]} onPress={() => setBtn('2')} >
                                         <Text style={[styles.Tstyle, { color: 'white' }]}>Student discount</Text>
                                     </TouchableOpacity>
                                 </View>
-                                : <View style={{ width: '48%' }}>
+                                : <View style={{ width: wp('18%') }}>
                                     <TouchableOpacity style={[styles.btnStyle, { backgroundColor: 'white' }]} onPress={() => setBtn('2')} >
-                                        <Text style={[styles.Tstyle, { color: 'black' }]}>Student discount</Text>
+                                        <Text style={[styles.Tstyle, { color: 'red' }]}>Student discount</Text>
                                     </TouchableOpacity>
                                 </View>}
                         </View>
 
 
-                        <View style={{ flexDirection: 'row', marginLeft: 30, marginRight: 30, justifyContent: 'space-around', marginTop: '5%' }}>
+                        <View style={{ flexDirection: 'row', marginLeft: wp('1.5%'), marginRight: wp('1.5%'), justifyContent: 'space-around', marginTop: '5%' }}>
                             {btn == '3' ?
-                                <View style={{ width: '48%' }}>
+                                <View style={{ width: wp('18%') }}>
                                     <TouchableOpacity style={[styles.btnStyle, { backgroundColor: 'red' }]} onPress={() => setBtn('3')} >
                                         <Text style={[styles.Tstyle, { color: 'white' }]}>Student discount</Text>
                                     </TouchableOpacity>
                                 </View>
-                                : <View style={{ width: '48%' }}>
+                                : <View style={{ width: wp('18%') }}>
                                     <TouchableOpacity style={[styles.btnStyle, { backgroundColor: 'white' }]} onPress={() => setBtn('3')} >
-                                        <Text style={[styles.Tstyle, { color: 'black' }]}>Student discount</Text>
+                                        <Text style={[styles.Tstyle, { color: 'red' }]}>Student discount</Text>
                                     </TouchableOpacity>
                                 </View>}
 
                             {btn == '4' ?
-                                <View style={{ width: '48%' }}>
+                                <View style={{ width: wp('18%') }}>
                                     <TouchableOpacity style={[styles.btnStyle, { backgroundColor: 'red' }]} onPress={() => setBtn('4')} >
                                         <Text style={[styles.Tstyle, { color: 'white' }]}>Student discount</Text>
                                     </TouchableOpacity>
                                 </View>
-                                : <View style={{ width: '48%' }}>
+                                : <View style={{ width: wp('18%') }}>
                                     <TouchableOpacity style={[styles.btnStyle, { backgroundColor: 'white' }]} onPress={() => setBtn('4')} >
-                                        <Text style={[styles.Tstyle, { color: 'black' }]}>Student discount</Text>
+                                        <Text style={[styles.Tstyle, { color: 'red' }]}>Student discount</Text>
                                     </TouchableOpacity>
                                 </View>}
                         </View>
 
 
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 20, borderBottomWidth: 0.3 }}>
-                            <Text>Total</Text>
-                            <Text>$ 2.50</Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: wp('3%'), borderBottomWidth: 0.3 }}>
+                            <Text style={{ fontSize: wp('1.5%') }}>Total</Text>
+                            <Text style={{ fontSize: wp('1.5%') }}>$ 2.50</Text>
                         </View>
 
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 20, borderBottomWidth: 0.3, opacity: 0.5 }}>
-                            <Text>Total discount:</Text>
-                            <Text>$ 20%</Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: wp('1%'), borderBottomWidth: 0.3, opacity: 0.5 }}>
+                            <Text style={{ fontSize: wp('1.5%') }}>Total discount:</Text>
+                            <Text style={{ marginRight: wp('2%'), fontSize: wp('1.5%') }}>$ 18%</Text>
                         </View>
 
 
-                        <View style={{ justifyContent: 'flex-end', flex: 1, marginTop: 50 }}>
-                            <TouchableOpacity style={{ backgroundColor: 'red', borderRadius: 5, width: "80%", alignSelf: 'center', height: 30, justifyContent: 'center' }} onPress={() => {
+                        <View style={{ justifyContent: 'flex-end', flex: 1, marginTop: wp('3%') }}>
+                            <TouchableOpacity style={{ backgroundColor: 'red', borderRadius: 5, width: wp('20%'), alignSelf: 'center', height: hp('5%'), justifyContent: 'center' }} onPress={() => {
                                 setState('Paymode');
                             }}>
-                                <Text style={{ alignSelf: 'center', color: 'white' }}>Next</Text>
+                                <Text style={{ alignSelf: 'center', color: 'white', fontSize: wp('1%') }}>Next</Text>
                             </TouchableOpacity>
                         </View>
                     </ScrollView>
@@ -113,12 +114,12 @@ const styles = {
         borderWidth: 1,
         borderColor: 'red',
         borderRadius: 5,
-        height: 30,
+        height: hp('5%'),
         justifyContent: 'center'
 
     },
     Tstyle: {
         alignSelf: 'center',
-        fontSize: 10
+        fontSize: wp('1%'),
     }
 }

@@ -7,11 +7,60 @@ import {
   Image,
 } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const EditTime = ({ navigation, route }) => {
   const [currentTime, setCurrentTime] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+  const [time, setTime] = useState(new Date());
+
+  const onChange = (event, selectedValue) => {
+    setShow(Platform.OS === 'ios');
+    if (mode == 'date') {
+      const currentDate = selectedValue || new Date();
+      setDate(currentDate);
+      setMode('time');
+      setShow(Platform.OS !== 'ios'); // to show the picker again in time mode
+    } else {
+      const selectedTime = selectedValue || new Date();
+      setTime(selectedTime);
+      setShow(Platform.OS === 'ios');
+      setMode('date');
+    }
+  };
+  const showMode = currentMode => {
+    setShow(true);
+    setMode(currentMode);
+  };
 
 
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
+
+  const formatDate = (time) => {
+    if (time.getMinutes() < 9) {
+      var min = '0' + time.getMinutes();
+    }
+    else {
+      var min = time.getMinutes();
+    }
+    if (time.getHours() < 9) {
+      var hour = '0' + time.getHours();
+    }
+    else {
+      var hour = time.getHours();
+    }
+
+    return `${hour}:${min}`;
+  };
   const branch = route.params?.Loc_id;
   const Key = route.params?.userid;
 
@@ -50,10 +99,22 @@ const EditTime = ({ navigation, route }) => {
           </View>
 
           <View style={{ marginTop: -5, alignSelf: 'flex-end' }}>
-            <Text style={{ textDecorationLine: 'underline', marginRight: 12, fontSize: wp('0.8%') }}>Edit Time</Text>
+            <TouchableOpacity onPress={showTimepicker}>
+              <Text style={{ textDecorationLine: 'underline', marginRight: 12, fontSize: wp('0.8%') }}>Edit Time</Text>
+            </TouchableOpacity>
+            {show && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={date}
+                mode={mode}
+                is24Hour={false}
+                display="default"
+                onChange={onChange}
+              />
+            )}
           </View>
           <View style={{ height: hp('20%'), marginTop: hp('5%') }}>
-            <Text style={{ fontWeight: "bold", fontSize: wp('5%') }}>{currentTime}</Text>
+            <Text style={{ fontWeight: "bold", fontSize: wp('5%') }}>{formatDate(time)}</Text>
           </View>
 
 

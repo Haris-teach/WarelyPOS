@@ -12,8 +12,10 @@ import {
 } from "react-native";
 import * as Animatable from 'react-native-animatable';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import APIHandler from "../utils/APIHandler";
+import { User_Pin } from "../utils/urls";
 
-const token = '$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82';
+
 
 
 const Pin = ({ navigation, route }) => {
@@ -53,47 +55,35 @@ const Pin = ({ navigation, route }) => {
   const branch = route.params?.branchId;
 
   useEffect(() => {
-    fetch("https://warly2.sapphost.com/public/api/pin_very", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
 
-      body: JSON.stringify({
-        "Pin": Pin,
-        'Id': Key,
-        'Token': token,
+    let params = {
+      Pin: Pin,
+      Id: Key,
+    };
 
-      })
-    }).
-      then(res => res.json()).
-      then(response => {
-        if (Pin.length == 7) {
-          if (response.status == 200) {
-            navigation.navigate('EditTime', { Loc_id: branch, userid: Key });
-            ToastAndroid.showWithGravityAndOffset(
-              "You have successfully Login",
-              ToastAndroid.LONG,
-              ToastAndroid.BOTTOM,
-              15,
-              15
-            );
-          }
-          if (response.status != 200) {
-            ToastAndroid.show("Invalid key for Login !", ToastAndroid.SHORT);
-            setP1("white");
-            setP2("white");
-            setP3("white");
-            setP4("white");
-            setValue(value.slice(0, -50));
-          }
+    APIHandler.hitApi(User_Pin, 'POST', params).then(response => {
+      if (Pin.length == 7) {
+        if (response.status == 200) {
+          navigation.navigate('EditTime', { Loc_id: branch, userid: Key });
+          ToastAndroid.showWithGravityAndOffset(
+            "You have successfully Login",
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM,
+            15,
+            15
+          );
         }
+        if (response.status != 200) {
+          ToastAndroid.show("Invalid key for Login !", ToastAndroid.SHORT);
+          setP1("white");
+          setP2("white");
+          setP3("white");
+          setP4("white");
+          setValue(value.slice(0, -50));
+        }
+      }
+    });
 
-      }).
-      catch((error) => {
-        console.error(error);
-      });
   }, [Pin]);
 
 

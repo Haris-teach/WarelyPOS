@@ -6,6 +6,8 @@ import SubTakeway from "./SubTakeway";
 import Takeway_dt from './Takeway_dt';
 import { DATA } from '../Model/Data';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Order_History, Order_Pending } from "../utils/urls";
+import APIHandler from "../utils/APIHandler";
 
 
 
@@ -30,50 +32,23 @@ const Takeway = (props) => {
 
   useEffect(() => {
 
-    fetch("https://warly2.sapphost.com/public/api/order", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
+    let param = {
+      loc_id: branch,
+      id: order_Id,
+      Status: status,
+      stf_id: Key,
+    };
 
-      body: JSON.stringify({
-
-        'Token': token,
-        'loc_id': branch,
-        'id': order_Id,
-        'Status': status,
-        'stf_id': Key,
+    APIHandler.hitApi(Order_Pending, 'POST', param).then(response => setValue(response));
 
 
-      })
-    }).
-      then(res => res.json()).
-      then(json => setValue(json)).
-      catch((error) => {
-        console.error(error);
-      });
+    let params = {
+      id: order_Id,
+    };
+
+    APIHandler.hitApi(Order_History, 'POST', params).then(response => setComplete(response));
 
 
-    fetch("http://warly2.sapphost.com/public/api/order_comp", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-
-      body: JSON.stringify({
-
-        'Token': token,
-        'id': order_Id,
-
-      })
-    }).
-      then(res => res.json()).
-      then(json => setComplete(json)).
-      catch((error) => {
-        console.error(error);
-      });
 
   }, [order_Id]);
 
