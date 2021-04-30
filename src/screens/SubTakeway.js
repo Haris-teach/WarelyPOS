@@ -8,6 +8,8 @@ import Takeway from './Takeway';
 import RNPrint from 'react-native-print';
 import * as Animatable from 'react-native-animatable';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Print_Slip, Table_res, Takeaway_Order } from '../utils/urls';
+import APIHandler from '../utils/APIHandler';
 
 var tableNames = "";
 var tableIds = "";
@@ -24,7 +26,7 @@ const SubTakeway = (props) => {
     const [i, setI] = useState(1);
     const [p, setP] = useState(0);
     const [d, setD] = useState(0);
-    const [value, setValue] = useState('1');
+    const [value, setValue] = useState('');
     const [data, setData] = useState();
     const [cat_id, setCat_id] = useState(0);
     const [slip, setSlip] = useState('');
@@ -35,7 +37,7 @@ const SubTakeway = (props) => {
     const [order, setOrder] = useState();
     const [cat, setCat] = useState();
     const count = props.Count;
-    const table_id = props.Table_Id;
+    const [pri, setPri] = useState();
     const br = props.br;
     const [currentTime, setCurrentTime] = useState('');
     var svc = 0;
@@ -83,7 +85,7 @@ const SubTakeway = (props) => {
 
         setArray(array.filter(item => item.key != Id));
 
-        setP(p - pr);
+        setP(p - pri);
         setD(d - parseInt(Dis));
     }
 
@@ -98,12 +100,6 @@ const SubTakeway = (props) => {
         setSelect('Burger');
     }
 
-    // const Empty1 = () => {
-
-    //     setArray(array.splice(0, array.length));
-    //     setLoading(!loading)
-    // }
-    const token = '$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82';
 
 
     useEffect(() => {
@@ -115,26 +111,14 @@ const SubTakeway = (props) => {
         );
 
         setArray(array);
-        fetch("http://warly2.sapphost.com/public/api/print", {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
 
-            body: JSON.stringify({
-                'Data': data,
-                'Total': Total,
-                'Dis': d,
-            })
-        }).
-            then(res => res.json()).
-            then(response => {
-                setSlip(response);
-            }).
-            catch((error) => {
-                console.error(error);
-            });
+        let param = {
+            Data: data,
+            Total: Total,
+            Dis: d,
+        };
+
+        APIHandler.hitApi(Print_Slip, 'POST', param).then(response => setSlip(response));
 
         fetch('http://warly2.sapphost.com/public/api/cat?token=$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82')
             .then((response) => response.json())
@@ -146,23 +130,7 @@ const SubTakeway = (props) => {
         setSelect('Burger');
     };
 
-    // const slip = <h1>hello</h1>
 
-    // const print = async printHTML => {
-    //     await RNPrint.print({
-    //         html: '{slip}'
-    //     })
-    // }
-
-    // // const print = async printPDF => {
-    //     const results = await RNHTMLtoPDF.convert({
-    //         html: '<View><Text>Hello</Text></View>',
-    //         fileName: 'test',
-    //         base64: true,
-    //     })
-
-    //     await RNPrint.print({ filePath: results.filePath })
-    // }
 
     const print = async printRemotePDF => {
         await RNPrint.print({ filePath: slip.url })
@@ -179,14 +147,17 @@ const SubTakeway = (props) => {
         if (v == 'del') {
             localQuantity = localQuantity.slice(0, -1);
 
-            let rowPrice = parseInt(localArr[selectedIndex].p) * localQuantity;
+            var rowPrice = parseInt(localArr[selectedIndex].p) * localQuantity;
             setP(localSubtotal + rowPrice);
+            setPri(rowPrice);
+
         }
         else {
             localQuantity = localQuantity + v;
 
-            let rowPrice = parseInt(localArr[selectedIndex].p) * localQuantity;
+            var rowPrice = parseInt(localArr[selectedIndex].p) * localQuantity;
             setP(localSubtotal + rowPrice);
+            setPri(rowPrice);
         }
 
         localArr[selectedIndex].qty = localQuantity;
@@ -196,90 +167,34 @@ const SubTakeway = (props) => {
 
 
     const Save_Order = () => {
-        fetch("https://warly2.sapphost.com/public/api/order_saved", {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-
-            body: JSON.stringify({
-
-                'Token': token,
-                'total': Total,
-                'loc_id': br,
-                'Data': data,
-                'stf_id': props.userId,
 
 
-            })
-        }).
-            then(res => res.json()).
-            then(json => {
-                setOrder(json);
+        let param = {
+            total: Total,
+            loc_id: br,
+            Data: data,
+            stf_id: props.userId,
+        };
 
-            }).
-            catch((error) => {
-                console.error(error);
-            });
-
+        APIHandler.hitApi(Takeaway_Order, 'POST', param).then(response => setOrder(response));
 
     };
 
 
-    // const Save_Table_order = () => {
-    //     fetch("https://warly2.sapphost.com/api/table_res", {
-    //         method: 'POST',
-    //         headers: {
-    //             Accept: 'application/json',
-    //             'Content-Type': 'application/json'
-    //         },
 
-    //         body: JSON.stringify({
-
-    //             'Token': token,
-    //             'total': Total,
-    //             'loc_id': br,
-    //             'Data': data,
-    //             't_id': table_id,
-    //             'mem': count,
-    //             'stf_id': props.userId
-    //         })
-    //     }).
-    //         then(res => res.json()).
-    //         then(json => setTable_data(json)).
-    //         catch((error) => {
-    //             console.error(error);
-    //         });
-    // };
 
     const fun = () => {
-        fetch("https://warly2.sapphost.com/public/api/table_res", {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
 
-            body: JSON.stringify({
+        let param = {
+            total: Total,
+            loc_id: br,
+            Data: data,
+            stf_id: props.userId,
+            t_id: tableIds,
+            mem: count,
+        };
 
-                'Token': token,
-                'total': Total,
-                'loc_id': br,
-                'Data': data,
-                't_id': tableIds,
-                'mem': count,
-                'stf_id': props.userId,
-
-            })
-        }).
-            then(res => res.json()).
-            then(json => {
-                console.log(json);
-            }).
-            catch((error) => {
-                console.error(error);
-            });
+        APIHandler.hitApi(Table_res, 'POST', param).then(response => console.log(response));
     }
 
     const renderTakeAwayItem = ({ item, index }) => {
@@ -310,7 +225,7 @@ const SubTakeway = (props) => {
                 </View>
                 <TouchableOpacity style={styles.viewbtnStyle}
                     onPress={() => newArray(item.key, item.p, item.dis)}>
-                    <Image source={require('../assets/dele.jpg')} style={{ width: 20, height: 20 }} />
+                    <Image source={require('../assets/Group.jpg')} style={{ width: wp('4%'), height: hp('4%') }} resizeMode='contain' />
                 </TouchableOpacity>
 
             </View>
@@ -331,15 +246,15 @@ const SubTakeway = (props) => {
                     justifyContent: "center",
                     alignItems: "center",
                 }}>
-                    <View style={{ width: '50%', backgroundColor: 'white', }}>
+                    <View style={{ width: '30%', height: '30%', backgroundColor: 'white', }}>
                         <FlatList
                             data={variantArray}
                             keyExtractor={(item) => item.key}
                             ListHeaderComponent={() => {
                                 return (
                                     <View style={{ flexDirection: "row", margin: 5, justifyContent: 'space-between' }}>
-                                        <Text style={{ fontWeight: 'bold' }}>Variant Name</Text>
-                                        <Text style={{ fontWeight: 'bold' }}>Price</Text>
+                                        <Text style={{ fontWeight: 'bold', fontSize: wp('1.4%') }}>Variant Name</Text>
+                                        <Text style={{ fontWeight: 'bold', fontSize: wp('1.2%') }}>Price</Text>
                                     </View>
                                 );
                             }}
@@ -361,18 +276,18 @@ const SubTakeway = (props) => {
                                             setVariantArray([]);
                                             setModalVisible(false);
                                         }}>
-                                        <Text>{item.name}</Text>
-                                        <Text>{item.price + " $"}</Text>
+                                        <Text style={{ fontSize: wp('1%') }}>{item.name}</Text>
+                                        <Text style={{ fontSize: wp('1%'), color: 'red' }}>{"$" + item.price}</Text>
                                     </TouchableOpacity>
                                 );
                             }}
                         />
 
-                        <TouchableOpacity style={{ margin: 5, padding: 5, alignItems: 'center', backgroundColor: 'black' }}
+                        <TouchableOpacity style={{ margin: 5, padding: 5, alignItems: 'center', backgroundColor: 'red' }}
                             onPress={() => {
                                 setModalVisible(false);
                             }}>
-                            <Text style={{ color: 'white' }}>Cancel</Text>
+                            <Text style={{ color: 'white', fontSize: wp('0.9%'), fontWeight: 'bold' }}>Cancel</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -401,7 +316,7 @@ const SubTakeway = (props) => {
                                             borderWidth: 2,
                                             borderColor: "#b5b5b5",
                                             marginTop: 5,
-                                            width: wp('15%'),
+                                            width: '20%',
                                             alignItems: 'center',
                                             height: hp('7%'),
                                             flex: 1,
@@ -416,12 +331,11 @@ const SubTakeway = (props) => {
                                         }} >
                                         <Text style={{ padding: 2, fontSize: wp('1.5%'), alignSelf: 'center' }}>Back</Text>
                                     </TouchableOpacity>
-
                                     <TouchableOpacity
                                         style={{
                                             borderRadius: 5,
                                             marginTop: 5,
-                                            width: wp('30%'),
+                                            width: '50%',
                                             alignItems: 'center',
                                             height: hp('7%'),
                                             backgroundColor: 'red',
@@ -429,8 +343,28 @@ const SubTakeway = (props) => {
                                             justifyContent: 'center'
 
                                         }} >
-                                        <Text style={{ padding: 2, fontSize: wp('1.5%'), color: 'white', alignSelf: 'center' }}>{tableNames}</Text>
+                                        {props.pass == 'Main' ?
+                                            <Text style={{ padding: 2, fontSize: wp('1.5%'), color: 'white', alignSelf: 'center' }}>{tableNames}</Text>
+                                            : props.pass == 'Takeway' ? <Text style={{ padding: 2, fontSize: wp('1.5%'), color: 'white', alignSelf: 'center' }}>Takeaway</Text> : null}
                                     </TouchableOpacity>
+                                    {props.pass == 'Main' ?
+                                        <View
+                                            style={{
+                                                borderRadius: 5,
+                                                marginTop: 5,
+                                                width: '15%',
+                                                alignItems: 'center',
+                                                height: hp('7%'),
+                                                backgroundColor: 'white',
+                                                alignSelf: 'flex-end',
+                                                justifyContent: 'center',
+                                                borderWidth: 2,
+                                                borderColor: "#b5b5b5",
+                                                marginLeft: 5
+
+                                            }} >
+                                            <Text style={{ padding: 2, fontSize: wp('1.5%'), color: 'black', alignSelf: 'center' }}>{props.Count} Pax</Text>
+                                        </View> : null}
                                 </View>
 
                                 <View style={{
@@ -443,9 +377,9 @@ const SubTakeway = (props) => {
                                     shadowRadius: 1,
                                     elevation: 1
                                 }}>
-                                    <Text style={{ alignSelf: 'flex-start', flex: 1, fontWeight: 'bold', fontSize: wp('1.3%'), marginTop: 4, marginLeft: 4 }}>
-                                        TAKEWAY
-                                </Text>
+                                    {props.pass == 'Main' ?
+                                        <Text style={{ alignSelf: 'flex-start', flex: 1, fontWeight: 'bold', fontSize: wp('1.3%'), marginTop: 4, marginLeft: 4 }}>Dinning</Text>
+                                        : props.pass == 'Takeway' ? <Text style={{ alignSelf: 'flex-start', flex: 1, fontWeight: 'bold', fontSize: wp('1.3%'), marginTop: 4, marginLeft: 4 }}>TAKEAWAY</Text> : null}
                                     <Text style={{ alignItems: 'center', flex: 1, color: 'red', fontSize: wp('1%'), marginTop: 4 }}>
                                         RECEIVED {currentTime}
                                     </Text>
@@ -585,7 +519,7 @@ const SubTakeway = (props) => {
 
                     <View style={{ flex: 0.5, backgroundColor: 'white' }}>
 
-                        {select === 'Burger' ? <Burger variantCallback={variantCallback} reload={reload} addNewItem={addNewItem} branch={br} Cat_id={cat_id} /> : select === 'Pay' ? <Pay pay={Total} branch={br} D={data} userid={props.userId} t_id={table_id} member={count} reload={reload} addNewItem={addNewItem} Empty={Empty} Call={callback} function={fun} statename={props.pass} Cat_id={cat_id} /> : select == 'cash' ?
+                        {select === 'Burger' ? <Burger variantCallback={variantCallback} reload={reload} addNewItem={addNewItem} branch={br} Cat_id={cat_id} /> : select === 'Pay' ? <Pay pay={Total} branch={br} D={data} userid={props.userId} t_id={tableIds} member={count} reload={reload} addNewItem={addNewItem} Empty={Empty} Call={callback} function={fun} statename={props.pass} Cat_id={cat_id} /> : select == 'cash' ?
 
                             <>
                                 <View style={{ borderBottomWidth: 0.4, height: 50, flexDirection: 'row', backgroundColor: 'rgb(240,240,240)' }}>
@@ -702,7 +636,10 @@ const SubTakeway = (props) => {
                                         </View>
 
                                         <TouchableOpacity style={{ backgroundColor: 'red', height: hp('8%'), justifyContent: 'center', borderRadius: 4, width: wp('40%'), alignSelf: 'center', marginTop: 30, marginBottom: 5 }}
-                                            onPress={() => setSelect('Burger')}
+                                            onPress={() => {
+                                                setSelect('Burger');
+                                                setValue('');
+                                            }}
                                         >
                                             <Text style={{ color: 'white', alignSelf: 'center', fontSize: wp('2%') }}>Next</Text>
                                         </TouchableOpacity>

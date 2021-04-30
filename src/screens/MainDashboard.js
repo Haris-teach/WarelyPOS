@@ -10,73 +10,14 @@ import Delivery from './Delivery';
 import Pickup from './Pickup';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import SubTakeway from './SubTakeway';
+import APIHandler from '../utils/APIHandler';
+import { Get_Tables, Dine_Order } from '../utils/urls';
 
-const DATA = [
-  {
-    key: '1',
-    time: '2:59  ',
-    mode: "PM",
-    bcolor: 'rgb(250,250,250)',
-    a: 'B4',
-    b: "A5",
-    bc: '#ffbf00',
-    radius: 13
 
-  },
-  {
-    key: '2',
-    time: '2:59  ',
-    mode: "PM",
-    a: 'B4',
-    b: "A5",
-    bc: 'gray',
-    radius: 1
-  },
-  {
-    key: '3',
-    time: '2:59  ',
-    mode: "PM",
-    bcolor: 'rgb(250,250,250)',
-    a: 'B4',
-    b: "A5",
-    bc: 'red',
-    radius: 20
-  },
-  {
-    key: '4',
-    time: '2:59  ',
-    mode: "PM",
-    a: 'B4',
-    b: "A5",
-    bc: '#ffbf00',
-    radius: 13
-  },
-  {
-    key: '5',
-    time: '2:59  ',
-    mode: "PM",
-    bcolor: 'rgb(250,250,250)',
-    a: 'B4',
-    b: "A5",
-    bc: 'gray',
-    radius: 1
-  },
-
-  {
-    key: '7',
-    time: '2:59  ',
-    mode: "PM",
-    bcolor: 'rgb(250,250,250)',
-    a: 'B4',
-    b: "A5",
-    bc: 'red',
-    radius: 20
-  },
-];
 
 var mergedTables = []
 
-const Dinning = ({ route }) => {
+const Dinning = ({ route, navigation }) => {
 
   const [selectMerge, setSelectMerge] = useState(false);
   // MAin TAB BAR
@@ -143,35 +84,27 @@ const Dinning = ({ route }) => {
 
   const [branch, setBranch] = useState("branch");
 
-  const token = '$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82';
+
 
   useEffect(() => {
-    fetch("http://warly2.sapphost.com/public/api/get_table", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
 
-      body: JSON.stringify({
-        'Token': token,
-        'Loc_id': br
 
-      })
-    }).
-      then(res => res.json()).
-      then(response => {
-        let localResponse = [...response];
+    let param = {
+      Loc_id: br
+    };
 
-        localResponse.forEach(element => {
-          element.selected = false;
-        });
+    APIHandler.hitApi(Get_Tables, 'POST', param).then(response => {
+      let localResponse = [...response];
 
-        setRes(localResponse);
-      }).
-      catch((error) => {
-        console.error(error);
+      localResponse.forEach(element => {
+        element.selected = false;
       });
+
+      setRes(localResponse);
+    });
+
+
+
 
     var weekday = new Array(7);
     weekday[0] = "Sun";
@@ -203,53 +136,29 @@ const Dinning = ({ route }) => {
     var dateStr = n + "/" + m + "/" + date;
     setDate(dateStr);
 
-    fetch("https://warly2.sapphost.com/public/api/order_dine", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
 
-      body: JSON.stringify({
-        'Token': token,
-        'loc_id': br,
-        'stf_id': Key,
-        'id': 1,
-      })
-    }).
-      then(res => res.json()).
-      then(response => {
-        setDayData(response);
-        console.log(response);
-      }).
-      catch((error) => {
-        console.error(error);
-      });
+    let params = {
+      loc_id: br,
+      stf_id: Key,
+      id: id,
+    };
+
+    APIHandler.hitApi(Dine_Order, 'POST', params).then(response => setDayData(response));
   }, []);
 
 
   const Day = (id) => {
-    fetch("https://warly2.sapphost.com/public/api/order_dine", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
 
-      body: JSON.stringify({
-        'Token': token,
-        'loc_id': br,
-        'stf_id': Key,
-        'id': id,
-      })
-    }).
-      then(res => res.json()).
-      then(response => {
-        setDayData(response);
-      }).
-      catch((error) => {
-        console.error(error);
-      });
+    let params = {
+      loc_id: br,
+      stf_id: Key,
+      id: id,
+    };
+
+    APIHandler.hitApi(Dine_Order, 'POST', params).then(response => setDayData(response));
+
+
+
   }
 
   const selectedTableForMerge = (index) => {
@@ -271,7 +180,7 @@ const Dinning = ({ route }) => {
 
   const renderModal = () => {
     return (
-      <View>
+      <View style={styles.centeredView}>
         <Modal
           animationType="fade"
           transparent={true}
@@ -296,7 +205,7 @@ const Dinning = ({ route }) => {
                 showsVerticalScrollIndicator={false}
                 renderItem={({ item }) => {
                   return (
-                    <View style={{ width: wp('10%'), height: hp('12%'), margin: 5, borderColor: '#32CD32', borderWidth: 5, borderRadius: 3, alignSelf: 'center', justifyContent: 'center' }}>
+                    <View style={{ width: wp('10%'), height: hp('12%'), marginTop: hp('-4%'), marginLeft: 10, borderColor: '#32CD32', borderWidth: 5, borderRadius: 3, alignSelf: 'center', justifyContent: 'center' }}>
                       <Text style={{ fontSize: wp('2%'), fontWeight: 'bold', color: 'black', alignSelf: 'center', }}>{item.table}</Text>
                     </View>
                   );
@@ -340,6 +249,8 @@ const Dinning = ({ route }) => {
       </View>
     );
   }
+
+
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -427,7 +338,7 @@ const Dinning = ({ route }) => {
                       style={{ backgroundColor: "white", }}
 
                       labelStyle={{
-
+                        fontSize: wp('1.2%'),
                         backgroundColor: 'white'
                       }}
                       dropDownStyle={{ backgroundColor: "white" }}
@@ -511,7 +422,7 @@ const Dinning = ({ route }) => {
                         <View style={styles.containerStyle}>
                           <TouchableOpacity style={[styles.Card, { backgroundColor: '#32CD32' }]}>
                             <Text style={styles.CardText}>1</Text>
-                            <Text style={styles.CardText1}>SEAT AVAILABLE</Text>
+                            <Text style={styles.CardText1}>SEAT AVAIABLE</Text>
                           </TouchableOpacity>
 
                           <TouchableOpacity style={[styles.Card, { backgroundColor: '#FF2E2E' }]}>
@@ -661,11 +572,10 @@ const styles = {
     fontSize: wp('2')
   },
   CardText1: {
-    fontSize: wp('1%'),
+    fontSize: wp('0.9%'),
     color: 'white',
-    marginLeft: 5,
-    marginTop: 5,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    marginTop: 10,
   },
   modalView: {
     marginTop: '15%',
@@ -709,7 +619,8 @@ const styles = {
     borderWidth: 9,
     marginLeft: wp('3%'),
     borderRadius: 40,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginBottom: hp('3%'),
   },
   // bookedTableText: {
   //   alignSelf: 'center',
