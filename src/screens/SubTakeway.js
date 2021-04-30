@@ -65,16 +65,34 @@ const SubTakeway = (props) => {
         setLoading(!loading)
     }
 
+    const contains = (object) => {
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].item === object.item) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 
     const addNewItem = (name, price, Dis, id, Var) => {
         const obj = { 'key': i, 'item': name, 'p': price, 'dis': Dis, 'qty': 1, "id": id, 'var_id': Var };
-        setP(p + parseInt(price));
-        setD(d + parseInt(Dis))
-        array.push(obj)
-        reload();
-        setI(i + 1);
-        setData(array);
-        setDi(Dis);
+
+        let check = contains(obj);
+
+        if (check !== -1) {
+            array[check].qty = array[check].qty + 1;
+
+            setArray([...array]);
+        } else {
+            setP(p + parseInt(price));
+            setD(d + parseInt(Dis));
+            array.push(obj);
+            reload();
+            setI(i + 1);
+            setData([...array]);
+            setDi(Dis);
+        }
     };
 
     const newArray = (Id, pr, Dis) => {
@@ -128,13 +146,9 @@ const SubTakeway = (props) => {
         setSelect('Burger');
     };
 
-
-
     const print = async printRemotePDF => {
         await RNPrint.print({ filePath: slip.url })
     }
-
-
 
     const concatinate = (v) => {
         let localArr = [...array];
@@ -269,7 +283,7 @@ const SubTakeway = (props) => {
                                 return (
                                     <TouchableOpacity style={{ flexDirection: "row", margin: 5, justifyContent: 'space-between' }}
                                         onPress={() => {
-                                            addNewItem(productItem.name, item.price, productItem.discount, productItem.id, item.id);
+                                            addNewItem(productItem.name + " - " + item.name, item.price, item.discount, productItem.id, item.id);
                                             setProductItem({});
                                             setVariantArray([]);
                                             setModalVisible(false);
