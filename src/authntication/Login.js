@@ -12,6 +12,8 @@ import {
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import DropDownPicker from "react-native-dropdown-picker";
+import { Branch_User, Branches } from "../utils/urls";
+import APIHandler from "../utils/APIHandler";
 
 
 const Data = [
@@ -61,39 +63,45 @@ const Login = ({ navigation }) => {
   const [branchid, setBranchid] = useState();
 
 
-  const token = '$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82';
+  const User_Branch = (branchId) => {
+    let params = {
+      Branch: branchId,
+    };
+
+    APIHandler.hitApi(Branch_User, 'POST', params).then(response => {
+      setData(response);
+    });
+  };
+
+  // const getData = (branchId) => {
+  //   fetch("http://warly2.sapphost.com/public/api/branch_user", {
+  //     method: 'POST',
+  //     headers: {
+  //       Accept: 'application/json',
+  //       'Content-Type': 'application/json'
+  //     },
+
+  //     body: JSON.stringify({
+  //       "Token": token,
+  //       "Branch": branchId,
+  //     })
+  //   }).
+  //     then(res => res.json()).
+  //     then(response => {
+
+
+  //       response && setData(response);
+  //     }).
+  //     catch((error) => {
+  //       console.error(error);
+  //     });
 
 
 
-  const getData = (branchId) => {
-    fetch("http://warly2.sapphost.com/public/api/branch_user", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-
-      body: JSON.stringify({
-        "Token": token,
-        "Branch": branchId,
-      })
-    }).
-      then(res => res.json()).
-      then(response => {
-
-
-        response && setData(response);
-      }).
-      catch((error) => {
-        console.error(error);
-      });
 
 
 
-
-
-
-  }
+  // }
 
   useEffect(() => {
 
@@ -102,6 +110,14 @@ const Login = ({ navigation }) => {
       .then((response) => response.json())
       .then((json) => setItems(json))
       .catch((error) => console.error(error));
+    // let params = {
+
+    // };
+
+    // APIHandler.hitApi(Branches, 'get', params).then(response => {
+    //   setItems(response);
+    // });
+
   }, []);
 
 
@@ -145,7 +161,7 @@ const Login = ({ navigation }) => {
             dropDownStyle={{ backgroundColor: "white" }}
             onChangeItem={(item) => {
               setValue(item.value); setBranchid(item.id)
-              getData(item.id)
+              User_Branch(item.id)
             }
 
             }

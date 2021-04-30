@@ -10,69 +10,11 @@ import Delivery from './Delivery';
 import Pickup from './Pickup';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import SubTakeway from './SubTakeway';
+import APIHandler from '../utils/APIHandler';
+import { Get_Tables, Dine_Order } from '../utils/urls';
 
-const DATA = [
-  {
-    key: '1',
-    time: '2:59  ',
-    mode: "PM",
-    bcolor: 'rgb(250,250,250)',
-    a: 'B4',
-    b: "A5",
-    bc: '#ffbf00',
-    radius: 13
 
-  },
-  {
-    key: '2',
-    time: '2:59  ',
-    mode: "PM",
-    a: 'B4',
-    b: "A5",
-    bc: 'gray',
-    radius: 1
-  },
-  {
-    key: '3',
-    time: '2:59  ',
-    mode: "PM",
-    bcolor: 'rgb(250,250,250)',
-    a: 'B4',
-    b: "A5",
-    bc: 'red',
-    radius: 20
-  },
-  {
-    key: '4',
-    time: '2:59  ',
-    mode: "PM",
-    a: 'B4',
-    b: "A5",
-    bc: '#ffbf00',
-    radius: 13
-  },
-  {
-    key: '5',
-    time: '2:59  ',
-    mode: "PM",
-    bcolor: 'rgb(250,250,250)',
-    a: 'B4',
-    b: "A5",
-    bc: 'gray',
-    radius: 1
-  },
 
-  {
-    key: '7',
-    time: '2:59  ',
-    mode: "PM",
-    bcolor: 'rgb(250,250,250)',
-    a: 'B4',
-    b: "A5",
-    bc: 'red',
-    radius: 20
-  },
-];
 
 var mergedTables = []
 
@@ -143,35 +85,25 @@ const MainDashboard = (props) => {
 
   const [branch, setBranch] = useState("branch");
 
-  const token = '$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82';
-
   useEffect(() => {
-    fetch("http://warly2.sapphost.com/public/api/get_table", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
 
-      body: JSON.stringify({
-        'Token': token,
-        'Loc_id': br
 
-      })
-    }).
-      then(res => res.json()).
-      then(response => {
-        let localResponse = [...response];
+    let param = {
+      Loc_id: br
+    };
 
-        localResponse.forEach(element => {
-          element.selected = false;
-        });
+    APIHandler.hitApi(Get_Tables, 'POST', param).then(response => {
+      let localResponse = [...response];
 
-        setRes(localResponse);
-      }).
-      catch((error) => {
-        console.error(error);
+      localResponse.forEach(element => {
+        element.selected = false;
       });
+
+      setRes(localResponse);
+    });
+
+
+
 
     var weekday = new Array(7);
     weekday[0] = "Sun";
@@ -203,53 +135,29 @@ const MainDashboard = (props) => {
     var dateStr = n + "/" + m + "/" + date;
     setDate(dateStr);
 
-    fetch("https://warly2.sapphost.com/public/api/order_dine", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
 
-      body: JSON.stringify({
-        'Token': token,
-        'loc_id': br,
-        'stf_id': Key,
-        'id': 1,
-      })
-    }).
-      then(res => res.json()).
-      then(response => {
-        setDayData(response);
-        console.log(response);
-      }).
-      catch((error) => {
-        console.error(error);
-      });
+    let params = {
+      loc_id: br,
+      stf_id: Key,
+      id: id,
+    };
+
+    APIHandler.hitApi(Dine_Order, 'POST', params).then(response => setDayData(response));
   }, []);
 
 
   const Day = (id) => {
-    fetch("https://warly2.sapphost.com/public/api/order_dine", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
 
-      body: JSON.stringify({
-        'Token': token,
-        'loc_id': br,
-        'stf_id': Key,
-        'id': id,
-      })
-    }).
-      then(res => res.json()).
-      then(response => {
-        setDayData(response);
-      }).
-      catch((error) => {
-        console.error(error);
-      });
+    let params = {
+      loc_id: br,
+      stf_id: Key,
+      id: id,
+    };
+
+    APIHandler.hitApi(Dine_Order, 'POST', params).then(response => setDayData(response));
+
+
+
   }
 
   const selectedTableForMerge = (index) => {
@@ -386,7 +294,7 @@ const MainDashboard = (props) => {
                       style={{ backgroundColor: "white", }}
 
                       labelStyle={{
-
+                        fontSize: wp('1.2%'),
                         backgroundColor: 'white'
                       }}
                       dropDownStyle={{ backgroundColor: "white" }}
@@ -620,10 +528,9 @@ const styles = {
     fontSize: wp('2')
   },
   CardText1: {
-    fontSize: wp('1%'),
+    fontSize: wp('0.9%'),
     color: 'white',
-    marginLeft: 5,
-    marginTop: 5,
+    marginTop: 10,
     alignSelf: 'center'
   },
   modalView: {
