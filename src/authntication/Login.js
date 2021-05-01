@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import {
   FlatList, Image, StyleSheet, Text,
-
-
-
   TouchableOpacity, View
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import APIHandler from "../utils/APIHandler";
 import { Branches, Branch_User } from "../utils/urls";
+import CustomActivityIndicator from "../components/generic/CustomActivityIndicator";
 
 const Login = ({ navigation }) => {
 
@@ -20,15 +18,19 @@ const Login = ({ navigation }) => {
   const [data, setData] = useState([]);
 
   const [branchid, setBranchid] = useState();
+  const [isLoading, setLoading] = useState(false);
 
 
   const User_Branch = (branchId) => {
     let params = {
       Branch: branchId,
     };
+    setLoading(true);
+
 
     APIHandler.hitApi(Branch_User, 'POST', params).then(response => {
       setData(response);
+      setLoading(false);
     });
   };
 
@@ -71,12 +73,13 @@ const Login = ({ navigation }) => {
 
             defaultValue={value}
             placeholder="Select a Branch"
-            containerStyle={{ height: hp('5%'), width: wp('15 %'), marginTop: -4 }}
+            containerStyle={{ height: 50, width: '40%', marginTop: -4 }}
             style={{ backgroundColor: "white", }}
 
             labelStyle={{
               textAlign: 'center',
-              backgroundColor: 'white'
+              backgroundColor: 'white',
+              fontSize: wp('1.5%')
             }}
             dropDownStyle={{ backgroundColor: "white" }}
             onChangeItem={(item) => {
@@ -114,6 +117,7 @@ const Login = ({ navigation }) => {
 
         </View>
       </View>
+      {isLoading && <CustomActivityIndicator />}
     </View>
   );
 }

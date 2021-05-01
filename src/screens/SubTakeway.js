@@ -10,6 +10,7 @@ import * as Animatable from 'react-native-animatable';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Print_Slip, Table_res, Takeaway_Order, PRODUCT_CAT } from '../utils/urls';
 import APIHandler from '../utils/APIHandler';
+import CustomActivityIndicator from "../components/generic/CustomActivityIndicator";
 
 var tableNames = "";
 var tableIds = "";
@@ -81,7 +82,7 @@ const SubTakeway = (props) => {
         let check = contains(obj);
 
         if (check !== -1) {
-            array[check].qty = array[check].qty + 1;
+            array[check].qty = parseInt(array[check].qty) + 1;
 
             setArray([...array]);
         } else {
@@ -136,7 +137,10 @@ const SubTakeway = (props) => {
 
         APIHandler.hitApi(Print_Slip, 'POST', param).then(response => setSlip(response));
 
-        APIHandler.hitApi(PRODUCT_CAT, 'GET').then(response => setCat(response));
+        APIHandler.hitApi(PRODUCT_CAT, 'GET').then(response => {
+            setCat(response);
+
+        });
 
     }, [loading]);
 
@@ -435,10 +439,10 @@ const SubTakeway = (props) => {
                                 </View>
 
                                 <View style={{ flexDirection: 'row', flex: 1, }}>
-                                    <View style={{ backgroundColor: 'rgb(240,240,240)', flex: 0.5, height: hp('26%'), }}>
+                                    <View style={{ backgroundColor: 'rgb(240,240,240)', flex: 0.5, }}>
                                     </View>
 
-                                    <View style={{ backgroundColor: 'rgb(240,240,240)', flex: 0.5, borderLeftWidth: 0.4, alignContent: 'center', height: hp('26%') }}>
+                                    <View style={{ backgroundColor: 'rgb(240,240,240)', flex: 0.5, borderLeftWidth: 0.4, alignContent: 'center' }}>
                                         <View style={{ opacity: 0.5, marginLeft: 25, marginRight: 25 }}>
 
                                             <View style={styles.vStyle}>
@@ -516,6 +520,7 @@ const SubTakeway = (props) => {
                     </View>
 
                     <View style={{ flex: 0.1, backgroundColor: 'rgb(240,240,240)', }}>
+
                         <FlatList
                             data={cat}
                             keyExtractor={item => item.key}

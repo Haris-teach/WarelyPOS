@@ -133,7 +133,7 @@ const Dinning = ({ route, navigation }) => {
     var m = mon[d.getMonth()]; // Since getMonth() returns month from 0-11 not 
     var date = d.getDate();
 
-    var dateStr = n + "/" + m + "/" + date;
+    var dateStr = n + "." + m + " " + date;
     setDate(dateStr);
 
 
@@ -334,7 +334,7 @@ const Dinning = ({ route, navigation }) => {
                       ]}
                       defaultValue={branch}
 
-                      containerStyle={{ height: hp('7%'), width: "100%", }}
+                      containerStyle={{ height: 50, width: "100%", }}
                       style={{ backgroundColor: "white", }}
 
                       labelStyle={{
@@ -447,7 +447,7 @@ const Dinning = ({ route, navigation }) => {
                             justifyContent: 'center',
                             backgroundColor: 'white',
                             width: wp('8%'),
-                            height: hp('4%')
+                            height: '5%'
                           }}
 
                           onPress={() => {
@@ -575,7 +575,7 @@ const styles = {
     fontSize: wp('0.9%'),
     color: 'white',
     alignSelf: 'center',
-    marginTop: 10,
+    marginTop: 5,
   },
   modalView: {
     marginTop: '15%',

@@ -139,7 +139,7 @@ const MainDashboard = (props) => {
     let params = {
       loc_id: br,
       stf_id: Key,
-      id: id,
+      id: 1,
     };
 
     APIHandler.hitApi(Dine_Order, 'POST', params).then(response => setDayData(response));

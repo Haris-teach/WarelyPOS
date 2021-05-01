@@ -11,7 +11,7 @@ const Pl = () => {
 
     return (
 
-        <>
+        <View style={{ flex: 1 }}>
 
             {state == true ?
                 <>
@@ -106,7 +106,7 @@ const Pl = () => {
                     </View>
                 </>
                 : <And />}
-        </>
+        </View>
     );
 }
 

@@ -9,71 +9,7 @@ import { SALE_HISTORY, SALE_HISTORY_DETAIL } from "../utils/urls";
 
 const SaleHistory = () => {
 
-  const DATA = [
-    {
-      id: '1',
-      title: 'First Item',
-      price: '$125.00',
-      bcolor: 'rgb(230,230,230)'
-    },
-    {
-      id: '2',
-      title: 'Second Item',
-      price: '$125.00',
-    },
-    {
-      id: '3',
-      title: 'Third Item',
-      price: '$125.00',
-      bcolor: 'rgb(230,230,230)'
-    }, {
-      id: '4',
-      title: 'First Item',
-      price: '$125.00',
-    },
-    {
-      id: '5',
-      title: 'Second Item',
-      price: '$125.00',
-      bcolor: 'rgb(230,230,230)'
-    },
-    {
-      id: '6',
-      title: 'Third Item',
-      price: '$125.00',
-    }, {
-      id: '7',
-      title: 'First Item',
-      price: '$125.00',
-      bcolor: 'rgb(230,230,230)'
-    },
-    {
-      id: '8',
-      title: 'Second Item',
-      price: '$125.00',
-    },
-    {
-      id: '9',
-      title: 'Third Item',
-      price: '$125.00',
-      bcolor: 'rgb(230,230,230)'
-    }, {
-      id: '10',
-      title: 'First Item',
-      price: '$125.00',
-    },
-    {
-      id: '11',
-      title: 'Second Item',
-      price: '$125.00',
-      bcolor: 'rgb(230,230,230)'
-    },
-    {
-      id: '12',
-      title: 'Third Item',
-      price: '$125.00',
-    }
-  ];
+
 
   const [saleOrders, setSaleOrders] = useState([]);
   const [orderDetails, setOrderDetails] = useState([]);

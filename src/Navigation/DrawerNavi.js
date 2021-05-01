@@ -84,7 +84,7 @@ const Lable2 = () => {
     return (
 
         <View style={styles.boxStyle}>
-            <Text style={{ fontSize: wp('1.2%'), alignSelf: 'center', marginTop: 5, fontWeight: 'bold' }}>SALE HISTORY</Text>
+            <Text style={{ fontSize: wp('1.2%'), alignSelf: 'center', fontWeight: 'bold' }}>SALE HISTORY</Text>
         </View>
 
 
@@ -95,7 +95,7 @@ const Lable3 = () => {
     return (
 
         <View style={styles.boxStyle}>
-            <Text style={{ fontSize: wp('1.2%'), alignSelf: 'center', marginTop: 5, fontWeight: 'bold' }}>SHIFT</Text>
+            <Text style={{ fontSize: wp('1.2%'), alignSelf: 'center', fontWeight: 'bold' }}>SHIFT</Text>
         </View>
 
 
@@ -106,7 +106,7 @@ const Lable4 = () => {
     return (
 
         <View style={styles.boxStyle}>
-            <Text style={{ fontSize: wp('1.2%'), alignSelf: 'center', marginTop: 5, fontWeight: 'bold' }}>SETTING</Text>
+            <Text style={{ fontSize: wp('1.2%'), alignSelf: 'center', fontWeight: 'bold' }}>SETTING</Text>
         </View>
 
 
@@ -124,9 +124,10 @@ const Lable6 = () => {
             height: hp('5%'),
             alignSelf: 'center',
             marginTop: -13,
-            backgroundColor: 'red'
+            backgroundColor: 'red',
+            justifyContent: 'center'
         }}>
-            <Text style={{ fontSize: wp('1.2%'), color: 'white', alignSelf: 'center', marginTop: 10, fontWeight: 'bold' }}>CLOSE SALE</Text>
+            <Text style={{ fontSize: wp('1.2%'), color: 'white', alignSelf: 'center', fontWeight: 'bold' }}>CLOSE SALE</Text>
         </View>
 
     );
