@@ -12,6 +12,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import SubTakeway from './SubTakeway';
 import APIHandler from '../utils/APIHandler';
 import { Get_Tables, Dine_Order } from '../utils/urls';
+import CustomActivityIndicator from "../components/generic/CustomActivityIndicator";
 
 
 
@@ -19,7 +20,7 @@ import { Get_Tables, Dine_Order } from '../utils/urls';
 var mergedTables = []
 
 const MainDashboard = (props) => {
-
+  const [isLoading, setLoading] = useState(false);
   const [selectMerge, setSelectMerge] = useState(false);
   // MAin TAB BAR
   const [select, setSelect] = useState(0);
@@ -70,6 +71,7 @@ const MainDashboard = (props) => {
   const [state, setState] = useState(false);
   const [table, setTable] = useState('');
   const [table_id, setTable_id] = useState();
+  const [t_order_id, setT_order_id] = useState();
 
   const increment = () => {
     return (
@@ -85,14 +87,18 @@ const MainDashboard = (props) => {
 
   const [branch, setBranch] = useState("branch");
 
+  const [table_condi, setTable_condi] = useState('');
+
   useEffect(() => {
 
 
     let param = {
       Loc_id: br
     };
+    setLoading(true);
 
     APIHandler.hitApi(Get_Tables, 'POST', param).then(response => {
+      setLoading(false);
       let localResponse = [...response];
 
       localResponse.forEach(element => {
@@ -258,7 +264,7 @@ const MainDashboard = (props) => {
       <>
         {select == 0 ?
           <>
-            { state == true ? <SubTakeway mergedTables={mergedTables} Pass='table' br={br} Table={table} pass="Main" Count={count} Table_Id={table_id} userId={Key} response={res} /> :
+            { state == true ? <SubTakeway T_order_id={t_order_id} mergedTables={mergedTables} Pass='table' br={br} Table={table} pass="Main" table_pass={table_condi} Count={count} Table_Id={table_id} userId={Key} response={res} /> :
               <>
                 <View style={{ flex: 1, flexDirection: "row" }}>
 
@@ -290,7 +296,7 @@ const MainDashboard = (props) => {
                       ]}
                       defaultValue={branch}
 
-                      containerStyle={{ height: hp('7%'), width: "100%", }}
+                      containerStyle={{ height: 50, width: "100%", }}
                       style={{ backgroundColor: "white", }}
 
                       labelStyle={{
@@ -425,6 +431,7 @@ const MainDashboard = (props) => {
                         </View> */}
 
                         <View style={{ width: "100%", height: '100%', alignSelf: 'center', marginTop: hp('10%'), backgroundColor: 'rgb(240,240,240)' }}>
+                          {isLoading && <CustomActivityIndicator />}
                           <FlatList
                             showsVerticalScrollIndicator={false}
                             data={res}
@@ -433,11 +440,14 @@ const MainDashboard = (props) => {
                             renderItem={({ item, index }) => (
                               <>
                                 <TouchableOpacity
-                                  disabled={item.status === "free" ? false : true}
+
                                   onPress={() => {
                                     if (item.status === "free") {
                                       if (selectMerge) {
                                         selectedTableForMerge(index);
+                                        setTable_condi('notable');
+                                        setT_order_id(item.order_id);
+
                                       }
                                       else {
                                         // setTable(item.table);
@@ -448,9 +458,19 @@ const MainDashboard = (props) => {
 
                                         mergedTables = singleTable;
                                         setModalVisible(true);
+                                        setTable_condi('notable');
+                                        setT_order_id(item.order_id);
+
                                       }
                                     } else {
-                                      ToastAndroid.show(item.table + "  is Booked !", ToastAndroid.SHORT)
+                                      setState(true);
+                                      ToastAndroid.show(item.table + "  is Booked !", ToastAndroid.SHORT);
+                                      setTable(item.table);
+                                      setT_order_id(item.order_id);
+                                      setTable_condi('table');
+                                      const obj = { 'table': item.table };
+                                      mergedTables = [obj];
+
                                     }
                                   }}>
                                   <View style={item.status === "free" ? styles.freeTable : [styles.bookedTable, { borderColor: selectMerge ? '#b5b5b5' : '#FF2E2E', }]}>
@@ -522,7 +542,7 @@ const styles = {
   },
   CardText: {
     alignSelf: 'center',
-    marginTop: 10,
+    marginTop: 5,
     color: 'white',
     fontWeight: 'bold',
     fontSize: wp('2')
@@ -575,7 +595,8 @@ const styles = {
     borderWidth: 9,
     marginLeft: wp('3%'),
     borderRadius: 40,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginBottom: hp('3%'),
   },
   // bookedTableText: {
   //   alignSelf: 'center',

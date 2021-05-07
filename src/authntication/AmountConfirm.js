@@ -10,6 +10,12 @@ import {
   ScrollView
 } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import APIHandler from "../utils/APIHandler";
+import { Pos_sell_start } from "../utils/urls";
+import { useSelector, useDispatch } from 'react-redux';
+import { Stf_id, Call } from '../Redux/Reducers/mainReducer';
+
+
 
 
 const AmountConfirm = ({ navigation, route }) => {
@@ -19,6 +25,13 @@ const AmountConfirm = ({ navigation, route }) => {
   const [value, setValue] = useState('');
 
 
+  const dispatch = useDispatch()
+  const { s_id } = useSelector((state) => state.root.main);
+
+  console.log('----name---', s_id)
+
+
+  console.log("Edit Time ====", route.params?.E_time, Key)
 
   const concatinate = (v) => {
     let word = value;
@@ -33,6 +46,16 @@ const AmountConfirm = ({ navigation, route }) => {
     }
 
     setValue(word);
+  }
+
+  const Pos_Sell_Start = () => {
+    let params = {
+      stf_id: Key,
+      open_sell: value,
+      start_time: route.params?.E_time,
+    };
+
+    APIHandler.hitApi(Pos_sell_start, 'POST', params).then(response => console.log("Pos Sell Start====", response));
   }
 
   return (
@@ -104,7 +127,12 @@ const AmountConfirm = ({ navigation, route }) => {
             justifyContent: "center",
             margin: 12,
           }}
-          onPress={() => navigation.navigate("Dinning", { Loc_id: branch, userid: Key })}
+          onPress={() => {
+            navigation.navigate("Dinning", { Loc_id: branch, userid: Key });
+            Pos_Sell_Start();
+            dispatch(Stf_id(Key));
+            dispatch(Call(false));
+          }}
         >
           <Text
             style={{

@@ -11,14 +11,17 @@ import Pickup from './Pickup';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import SubTakeway from './SubTakeway';
 import APIHandler from '../utils/APIHandler';
-import { Get_Tables, Dine_Order } from '../utils/urls';
-
+import { Get_Tables, Dine_Order, Pos_sell_end } from '../utils/urls';
+import CustomActivityIndicator from "../components/generic/CustomActivityIndicator";
+import { useSelector, useDispatch } from 'react-redux';
+import { Call, Stf_Name } from '../Redux/Reducers/mainReducer';
 
 
 var mergedTables = []
 
 const Dinning = ({ route, navigation }) => {
-
+  const [isLoading, setLoading] = useState(false);
+  const { fun, stf_name } = useSelector((state) => state.root.main);
   const [selectMerge, setSelectMerge] = useState(false);
   // MAin TAB BAR
   const [select, setSelect] = useState(0);
@@ -65,10 +68,20 @@ const Dinning = ({ route, navigation }) => {
   const Btns = [{ element: b2 }, { element: b1 }];
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisi, setModalVisi] = useState(false);
   const [count, setCount] = useState(1);
   const [state, setState] = useState(false);
   const [table, setTable] = useState('');
   const [table_id, setTable_id] = useState();
+  const [t_order_id, setT_order_id] = useState();
+  const [table_condi, setTable_condi] = useState('');
+
+
+  const dispatch = useDispatch();
+
+  const Model_show = () => {
+    setModalVisi(true);
+  }
 
   const increment = () => {
     return (
@@ -92,8 +105,10 @@ const Dinning = ({ route, navigation }) => {
     let param = {
       Loc_id: br
     };
+    setLoading(true);
 
     APIHandler.hitApi(Get_Tables, 'POST', param).then(response => {
+      setLoading(false);
       let localResponse = [...response];
 
       localResponse.forEach(element => {
@@ -178,6 +193,7 @@ const Dinning = ({ route, navigation }) => {
     setRes(localArr);
   }
 
+
   const renderModal = () => {
     return (
       <View style={styles.centeredView}>
@@ -251,7 +267,18 @@ const Dinning = ({ route, navigation }) => {
   }
 
 
+  const [response, setResponse] = useState([{ "created_at": "2021-05-06 18:16:54", "end_sell": "0", "end_time": "06:16:55", "id": 31, "open_sell": null, "start_time": "17:46:00", "stf_id": "8", "updated_at": "2021-05-06 18:16:54" }]);
+  useEffect(() => {
+    let param = {
+      stf_id: Key,
+    };
 
+    APIHandler.hitApi(Pos_sell_end, 'POST', param).then(res => setResponse(res));
+
+    dispatch(Call(false));
+
+  }, []);
+  console.log("Pos_sell_end===", response);
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       {renderModal()}
@@ -302,7 +329,7 @@ const Dinning = ({ route, navigation }) => {
       <>
         {select == 0 ?
           <>
-            { state == true ? <SubTakeway mergedTables={mergedTables} Pass='table' br={br} Table={table} pass="Main" Count={count} Table_Id={table_id} userId={Key} response={res} /> :
+            { state == true ? <SubTakeway T_order_id={t_order_id} mergedTables={mergedTables} Pass='table' br={br} Table={table} pass="Main" table_pass={table_condi} Count={count} Table_Id={table_id} userId={Key} response={res} /> :
               <>
                 <View style={{ flex: 1, flexDirection: "row" }}>
 
@@ -469,6 +496,7 @@ const Dinning = ({ route, navigation }) => {
                         </View> */}
 
                         <View style={{ width: "100%", height: '100%', alignSelf: 'center', marginTop: hp('10%'), backgroundColor: 'rgb(240,240,240)' }}>
+                          {isLoading && <CustomActivityIndicator />}
                           <FlatList
                             showsVerticalScrollIndicator={false}
                             data={res}
@@ -476,12 +504,15 @@ const Dinning = ({ route, navigation }) => {
                             numColumns={4}
                             renderItem={({ item, index }) => (
                               <>
+
                                 <TouchableOpacity
-                                  disabled={item.status === "free" ? false : true}
+
                                   onPress={() => {
                                     if (item.status === "free") {
                                       if (selectMerge) {
                                         selectedTableForMerge(index);
+                                        setTable_condi('notable');
+                                        setT_order_id(item.order_id);
                                       }
                                       else {
                                         // setTable(item.table);
@@ -492,9 +523,17 @@ const Dinning = ({ route, navigation }) => {
 
                                         mergedTables = singleTable;
                                         setModalVisible(true);
+                                        setTable_condi('notable');
+                                        setT_order_id(item.order_id);
+
                                       }
-                                    } else {
-                                      ToastAndroid.show(item.table + "  is Booked !", ToastAndroid.SHORT)
+                                    }
+                                    else {
+                                      setState(true);
+                                      ToastAndroid.show(item.table + "  is Booked !", ToastAndroid.SHORT);
+                                      setTable(item.table);
+                                      setT_order_id(item.order_id);
+                                      setTable_condi('table');
                                     }
                                   }}>
                                   <View style={item.status === "free" ? styles.freeTable : [styles.bookedTable, { borderColor: selectMerge ? '#b5b5b5' : '#FF2E2E', }]}>
@@ -531,6 +570,81 @@ const Dinning = ({ route, navigation }) => {
           </>
           : select == 1 ? <Takeway branch={br} idUser={Key} /> : select == 2 ? <Delivery /> : select == 3 ? <Pickup /> : null}
       </>
+      <View>
+        <Modal
+          animationType="fade"
+
+          transparent={true}
+          visible={fun}
+          onRequestClose={() => {
+
+            dispatch(Call(false));
+          }}
+        >
+
+          <View style={styles.modalView}>
+            <TouchableOpacity style={{ alignSelf: 'flex-end', marginRight: 10, marginTop: 8 }} onPress={() => dispatch(Call(false))}>
+              <Image source={require('../assets/cross.jpg')} resizeMode="contain" style={{ width: 20, height: 20 }} />
+            </TouchableOpacity>
+
+
+
+
+            <View style={{ marginBottom: 2, alignItems: 'center' }}>
+              <Text style={{ fontSize: 30, fontWeight: 'bold' }}>{stf_name}</Text>
+
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 5 }}>
+              <Text style={{ fontWeight: 'bold' }}>Check in Time</Text>
+              <Text>{response.map(i => i.start_time)}</Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 5 }}>
+              <Text style={{ fontWeight: 'bold' }}>Check out Time</Text>
+              <Text>{response.map(i => i.end_time)}</Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 5 }}>
+              <Text style={{ fontWeight: 'bold' }}>Check in amount</Text>
+              <Text>{response.map(i => i.open_sell)}</Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 5 }}>
+              <Text style={{ fontWeight: 'bold' }}>Check out amount</Text>
+              <Text>${response.map(i => i.end_sell)}</Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 5 }}>
+              <Text style={{ fontWeight: 'bold' }}>Check out amount</Text>
+              <Text>${response.map(i => i.end_sell) - response.map(i => i.open_sell)}</Text>
+            </View>
+
+
+
+
+
+
+
+
+
+
+
+            <View style={{ justifyContent: 'flex-end', flex: 1, width: '98%' }}>
+              <TouchableOpacity style={{ backgroundColor: 'red', width: wp('19.5%'), height: hp('5%'), marginBottom: 5, borderRadius: 4, justifyContent: 'center' }}
+                onPress={() => {
+                  dispatch(Call(false));
+                  navigation.navigate('Login');
+                }}>
+                <Text style={{ color: 'white', alignSelf: 'center', fontSize: wp('1.3%') }}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+
+        </Modal>
+      </View>
+
     </View>
   );
 }
@@ -566,7 +680,7 @@ const styles = {
   },
   CardText: {
     alignSelf: 'center',
-    marginTop: 10,
+    marginTop: 5,
     color: 'white',
     fontWeight: 'bold',
     fontSize: wp('2')

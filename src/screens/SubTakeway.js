@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, Text, Modal, TouchableOpacity, View, ScrollView, TextInput, SliderComponent } from 'react-native';
+import { FlatList, Image, Text, Modal, TouchableOpacity, View, ScrollView } from 'react-native';
 import MainDashborad from './Dinning';
 import Burger from './Burger';
 import Pay from './Pay';
@@ -8,26 +8,25 @@ import Takeway from './Takeway';
 import RNPrint from 'react-native-print';
 import * as Animatable from 'react-native-animatable';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Print_Slip, Table_res, Takeaway_Order, PRODUCT_CAT } from '../utils/urls';
+import { Print_Slip, Table_res, Takeaway_Order, PRODUCT_CAT, Get_Tables, TABLE_DETAIL, Table_Close } from '../utils/urls';
 import APIHandler from '../utils/APIHandler';
 import CustomActivityIndicator from "../components/generic/CustomActivityIndicator";
 
 var tableNames = "";
 var tableIds = "";
-
 const SubTakeway = (props) => {
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [modalVisible, setModalVisible] = useState(false);
     const [productItem, setProductItem] = useState({});
     const [variantArray, setVariantArray] = useState([]);
-
+    const [isLoad, setLoad] = useState(false);
     const [state, setState] = useState('sub');
     const [loading, setLoading] = useState(false);
     const [select, setSelect] = useState('Burger');
     const [i, setI] = useState(1);
     const [p, setP] = useState(0);
     const [d, setD] = useState(0);
-    const [value, setValue] = useState('');
+    const [value, setValue] = useState('1');
     const [data, setData] = useState();
     const [cat_id, setCat_id] = useState(0);
     const [slip, setSlip] = useState('');
@@ -44,7 +43,10 @@ const SubTakeway = (props) => {
     var svc = 0;
     var gst = 0;
     const Id = props.userId;
-    var Total = p - d + svc + gst;
+    var Total = p + svc + gst;
+    const [table_order_detail, setTable_order_detail] = useState({ "arr": [{ "id": 503, "mem": 1, "payment_status": "Paid", "table": "T2", "table_id": "4", "total": "800.00", "sum": 30 }], "arry2": [{ "id": 402, "name": "pizza 2 Large", "quantity": 1, "unit_price": "800.00" }] });
+    const [totalp, setTotalp] = useState('');
+    const [modal, setModal] = useState(false);
 
     const mapAndJoin = (arr, key) => {
         return arr.map(function (o) {
@@ -58,7 +60,8 @@ const SubTakeway = (props) => {
 
             tableNames = mapAndJoin(mergedTables, 'table');
             tableIds = mapAndJoin(mergedTables, 'key');
-            console.log("tableIds ===", tableIds);
+            console.log("table_name=====", tableNames);
+
         }
     }, []);
 
@@ -77,13 +80,14 @@ const SubTakeway = (props) => {
     }
 
     const addNewItem = (name, price, Dis, id, Var) => {
-        const obj = { 'key': i, 'item': name, 'p': price, 'dis': Dis, 'qty': 1, "id": id, 'var_id': Var };
+        const obj = { 'key': i, 'item': name, 'p': price, 'dis': Dis, 'qty': value, "id": id, 'var_id': Var };
 
         let check = contains(obj);
 
         if (check !== -1) {
             array[check].qty = parseInt(array[check].qty) + 1;
 
+            setP(p + parseInt(price));
             setArray([...array]);
         } else {
             setP(p + parseInt(price));
@@ -102,7 +106,7 @@ const SubTakeway = (props) => {
 
         setArray(array.filter(item => item.key != Id));
 
-        setP(p - pri);
+        setP(p - pr);
         setD(d - parseInt(Dis));
     }
 
@@ -117,7 +121,13 @@ const SubTakeway = (props) => {
         setSelect('Burger');
     }
 
+    const Table_order = () => {
+        let param = {
+            Loc_id: br
+        };
+        APIHandler.hitApi(Get_Tables, 'POST', param).then(response => console.log("Table API Response", response))
 
+    };
 
     useEffect(() => {
         var hours = new Date().getHours(); //Current Hours
@@ -136,13 +146,33 @@ const SubTakeway = (props) => {
         };
 
         APIHandler.hitApi(Print_Slip, 'POST', param).then(response => setSlip(response));
+        setLoad(true);
+        let params = {
+            order_id: props.T_order_id
+        };
+        APIHandler.hitApi(TABLE_DETAIL, 'POST', params).then(response => {
+            setTable_order_detail(response);
+            setLoad(false);
+            console.log(response);
 
-        APIHandler.hitApi(PRODUCT_CAT, 'GET').then(response => {
-            setCat(response);
+
 
         });
 
-    }, [loading]);
+
+
+        APIHandler.hitApi(PRODUCT_CAT, 'GET').then(response => {
+            setCat(response);
+        });
+
+
+
+    }, [props.T_order_id, loading]);
+
+
+
+
+
 
     const callback = () => {
         setSelect('Burger');
@@ -198,7 +228,33 @@ const SubTakeway = (props) => {
 
     };
 
+    const Table_Booked_but_not_Paid = () => {
 
+        let param = {
+            total: null,
+            loc_id: br,
+            Data: data,
+            stf_id: props.userId,
+            t_id: tableIds,
+            mem: count,
+        };
+
+        APIHandler.hitApi(Table_res, 'POST', param).then(response => console.log(" Table_Booked_but_not_Paid ", response));
+        setState(props.pass);
+    }
+
+    const Table_Free = () => {
+        setModal(true);
+        if (modal == false) {
+            let param = {
+                id: parseInt(table_order_detail.arr.map(i => i.id)),
+                // t_id: table_order_detail.arr.map(i => i.table_id),
+            };
+
+            APIHandler.hitApi(Table_Close, 'POST', param).then(response => console.log(" Table_Free_====== ", response));
+        }
+
+    }
 
 
     const fun = () => {
@@ -219,10 +275,10 @@ const SubTakeway = (props) => {
         return (
             <View style={{ flexDirection: 'row', backgroundColor: 'white' }}>
                 <View style={styles.viewStyle}>
-                    <Text style={styles.textStyle}>{item.key}</Text>
+                    <Text style={[styles.textStyle, { color: 'black' }]}>{item.key}</Text>
                 </View>
                 <View style={styles.viewStyle}>
-                    <Text style={styles.textStyle}>{item.item}</Text>
+                    <Text style={[styles.textStyle, { color: 'black' }]}>{item.item}</Text>
                 </View>
 
                 <TouchableOpacity
@@ -232,21 +288,53 @@ const SubTakeway = (props) => {
                         setSelectedIndex(index);
                         setValue('');
                     }}>
-                    <Text style={styles.textStyle}>{item.qty}</Text>
+                    <Text style={[styles.textStyle, { color: 'red' }]}>{item.qty}</Text>
                 </TouchableOpacity>
 
-                <View style={styles.viewStyle}>
+                {/* <View style={styles.viewStyle}>
                     <Text style={styles.textStyle}>{item.dis}</Text>
-                </View>
+                </View> */}
 
                 <View style={styles.viewStyle}>
-                    <Text style={styles.textStyle}>${item.p}</Text>
+                    <Text style={[styles.textStyle, { color: 'red' }]}>${item.p}</Text>
                 </View>
                 <TouchableOpacity style={styles.viewbtnStyle}
                     onPress={() => newArray(item.key, item.p, item.dis)}>
                     <Image source={require('../assets/Group.jpg')} style={{ width: wp('4%'), height: hp('4%') }} resizeMode='contain' />
                 </TouchableOpacity>
 
+            </View>
+        );
+    };
+
+    const ShowOrderTable = ({ item }) => {
+        return (
+
+            <View style={{ flexDirection: 'row', backgroundColor: 'white' }}>
+                { isLoad && <CustomActivityIndicator />}
+                <View style={styles.viewStyle}>
+                    <Text style={styles.textStyle}>{item.id}</Text>
+                </View>
+                <View style={styles.viewStyle}>
+                    <Text style={styles.textStyle}>{item.name}</Text>
+                </View>
+
+                <View
+                    style={[styles.viewStyle, { borderWidth: 0.5 }]}
+                    onPress={() => {
+                    }}>
+                    <Text style={[styles.textStyle, { color: 'red' }]}>{item.quantity}</Text>
+                </View>
+
+                {/* <View style={styles.viewStyle}>
+                    <Text style={styles.textStyle}>{item.dis}</Text>
+                </View> */}
+
+                <View style={styles.viewStyle}>
+                    <Text style={[styles.textStyle, { color: 'red' }]}>${item.unit_price}</Text>
+                </View>
+
+                {setTotalp(item.total)}
             </View>
         );
     };
@@ -266,17 +354,14 @@ const SubTakeway = (props) => {
                     alignItems: "center",
                 }}>
                     <View style={{ width: '30%', height: '30%', backgroundColor: 'white', }}>
+                        <View style={{ flexDirection: "row", margin: 5, justifyContent: 'space-between' }}>
+                            <Text style={{ fontWeight: 'bold', fontSize: wp('1.4%') }}>Variant Name</Text>
+                            <Text style={{ fontWeight: 'bold', fontSize: wp('1.2%') }}>Price</Text>
+                        </View>
                         <FlatList
                             data={variantArray}
-                            keyExtractor={(item) => item.key}
-                            ListHeaderComponent={() => {
-                                return (
-                                    <View style={{ flexDirection: "row", margin: 5, justifyContent: 'space-between' }}>
-                                        <Text style={{ fontWeight: 'bold', fontSize: wp('1.4%') }}>Variant Name</Text>
-                                        <Text style={{ fontWeight: 'bold', fontSize: wp('1.2%') }}>Price</Text>
-                                    </View>
-                                );
-                            }}
+                            keyExtractor={(item) => item.var_id}
+
                             ItemSeparatorComponent={() => {
                                 return (
                                     <View style={{
@@ -320,9 +405,47 @@ const SubTakeway = (props) => {
         setVariantArray(item.var);
     }
 
+
+
+
+
     // <Pay pay={Total} branch={br} D={data} userid={props.userId} t_id={table_id} member={count} reload={reload} addNewItem={addNewItem} Empty={Empty}  Call={callback} function={fun} statename={props.pass} />
     return (
         <>
+            <Modal
+                animationType="fade"
+
+                transparent={true}
+                visible={modal}
+                onRequestClose={() => {
+
+                    setModal(!modal);
+                }}
+            >
+
+                <View style={styles.modalView}>
+                    <TouchableOpacity style={{ alignSelf: 'flex-end', marginRight: 10, marginTop: 8 }} onPress={() => setModal(false)}>
+                        <Image source={require('../assets/cross.jpg')} resizeMode="contain" style={{ width: 20, height: 20 }} />
+                    </TouchableOpacity>
+
+
+                    <View style={{ marginRight: 10, marginTop: 8, alignSelf: 'center', width: '40%', height: '40%' }} >
+                        <Image source={require('../assets/booking-confirmed.png')} resizeMode="contain" style={{ width: '100%', height: '100%' }} />
+                    </View>
+                    <Text style={{ fontSize: wp('1.4%') }}>Confirm to Table Free</Text>
+                    <View style={{ justifyContent: 'flex-end', flex: 1, width: '98%' }}>
+                        <TouchableOpacity style={{ backgroundColor: 'red', width: wp('19.5%'), height: hp('5%'), marginBottom: 5, borderRadius: 4, justifyContent: 'center' }}
+                            onPress={() => {
+                                setModal(false);
+                                setState(props.pass);
+                            }}>
+                            <Text style={{ color: 'white', alignSelf: 'center', fontSize: wp('1.3%') }}>Confirm</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                </View>
+
+            </Modal>
             {state === 'sub' ?
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                     <View style={{ flex: 0.5, backgroundColor: 'white' }}>
@@ -351,6 +474,7 @@ const SubTakeway = (props) => {
                                         <Text style={{ padding: 2, fontSize: wp('1.5%'), alignSelf: 'center' }}>Back</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
+                                        disabled={props.pass == 'Main' ? false : true}
                                         style={{
                                             borderRadius: 5,
                                             marginTop: 5,
@@ -361,9 +485,12 @@ const SubTakeway = (props) => {
                                             alignSelf: 'flex-end',
                                             justifyContent: 'center'
 
-                                        }} >
-                                        {props.pass == 'Main' ?
-                                            <Text style={{ padding: 2, fontSize: wp('1.5%'), color: 'white', alignSelf: 'center' }}>{tableNames}</Text>
+                                        }}
+                                        onPress={() => { props.table_pass == 'notable' ? Table_Booked_but_not_Paid() : <>{table_order_detail.arr.map(i => i.payment_status) == 'paid' ? Table_Free() : null}</> }}
+                                    >
+                                        {props.pass == 'Main' ? <>
+                                            {/* {isLoad && <CustomActivityIndicator />} */}
+                                            <Text style={{ padding: 2, fontSize: wp('1.5%'), color: 'white', alignSelf: 'center' }}>{props.table_pass == 'table' ? table_order_detail.arr.map(i => i.table) : tableNames}</Text></>
                                             : props.pass == 'Takeway' ? <Text style={{ padding: 2, fontSize: wp('1.5%'), color: 'white', alignSelf: 'center' }}>Takeaway</Text> : null}
                                     </TouchableOpacity>
                                     {props.pass == 'Main' ?
@@ -382,7 +509,8 @@ const SubTakeway = (props) => {
                                                 marginLeft: 5
 
                                             }} >
-                                            <Text style={{ padding: 2, fontSize: wp('1.5%'), color: 'black', alignSelf: 'center' }}>{props.Count} Pax</Text>
+                                            {/* {isLoad && <CustomActivityIndicator />} */}
+                                            <Text style={{ padding: 2, fontSize: wp('1.5%'), color: 'black', alignSelf: 'center' }}>{props.table_pass == 'notable' ? props.Count : props.table_pass == 'table' ? table_order_detail.arr.map(i => i.mem) : null} Pax</Text>
                                         </View> : null}
                                 </View>
 
@@ -409,33 +537,40 @@ const SubTakeway = (props) => {
 
                                 <View style={{ flexDirection: 'row', marginLeft: 0 }}>
                                     <View style={styles.viewStyle}>
-                                        <Text style={[styles.textStyle, { fontWeight: 'bold' }]}>NO.  </Text>
+                                        <Text style={[styles.textStyle, { fontWeight: 'bold', color: 'black' }]}>NO.  </Text>
                                     </View>
                                     <View style={styles.viewStyle}>
-                                        <Text style={[styles.textStyle, { fontWeight: 'bold' }]}>item  </Text>
-                                    </View>
-
-                                    <View style={styles.viewStyle}>
-                                        <Text style={[styles.textStyle, { fontWeight: 'bold' }]}>Qty </Text>
+                                        <Text style={[styles.textStyle, { fontWeight: 'bold', color: 'black' }]}>item  </Text>
                                     </View>
 
                                     <View style={styles.viewStyle}>
-                                        <Text style={[styles.textStyle, { fontWeight: 'bold' }]}>Discount</Text>
+                                        <Text style={[styles.textStyle, { fontWeight: 'bold', color: 'black' }]}>Qty </Text>
                                     </View>
 
+                                    {/* <View style={styles.viewStyle}>
+                                        <Text style={[styles.textStyle, { fontWeight: 'bold', color: 'black' }]}>Discount</Text>
+                                    </View> */}
+
                                     <View style={styles.viewStyle}>
-                                        <Text style={[styles.textStyle, { fontWeight: 'bold' }]}>Price  </Text>
+                                        <Text style={[styles.textStyle, { fontWeight: 'bold', color: 'black' }]}>Price  </Text>
                                     </View>
                                     <View style={styles.viewStyle}>
-                                        <Text style={[styles.textStyle, { fontWeight: 'bold' }]}>Del   </Text>
+                                        <Text style={[styles.textStyle, { fontWeight: 'bold', color: 'black' }]}>Del   </Text>
                                     </View>
                                 </View>
 
                                 <View style={{ height: hp('40%') }}>
-                                    <FlatList
-                                        data={array}
-                                        keyExtractor={(item) => item.key}
-                                        renderItem={renderTakeAwayItem} />
+                                    {props.table_pass == 'notable' ?
+                                        <FlatList
+                                            data={array}
+                                            keyExtractor={(item) => item.key}
+                                            renderItem={renderTakeAwayItem} /> :
+                                        props.table_pass == 'table' ?
+
+                                            <FlatList
+                                                data={table_order_detail.arry2}
+                                                keyExtractor={(item) => item.id}
+                                                renderItem={ShowOrderTable} /> : null}
                                 </View>
 
                                 <View style={{ flexDirection: 'row', flex: 1, }}>
@@ -460,14 +595,14 @@ const SubTakeway = (props) => {
                                                 <Text style={styles.Tstyle}>${gst}</Text>
                                             </View>
 
-                                            <View style={styles.vStyle}>
+                                            {/* <View style={styles.vStyle}>
                                                 <Text style={[styles.Tstyle, { flex: 1 }]}>Discount</Text>
                                                 <Text style={styles.Tstyle}>-${d}</Text>
-                                            </View>
+                                            </View> */}
                                         </View>
                                         <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderTopWidth: 1, marginLeft: 25, marginRight: 25, marginTop: '-4%' }}>
                                             <Text style={{ flex: 1, alignSelf: "center", fontSize: wp('1.5%') }} >Total</Text>
-                                            <Text style={{ fontSize: wp('1.5%'), alignSelf: 'center' }}>${Total}</Text>
+                                            <Text style={{ fontSize: wp('1.5%'), alignSelf: 'center', color: 'red' }}>${props.table_pass == 'table' ? table_order_detail.arr.map(i => i.sum) : props.table_pass == 'notable' ? Total : null}</Text>
                                         </View>
 
                                     </View>
@@ -480,7 +615,9 @@ const SubTakeway = (props) => {
                         <View style={{ flexDirection: 'row', marginBottom: '3%', }}>
                             <View style={{ flex: 1, marginLeft: 10, }}>
                                 <TouchableOpacity style={[styles.fbtnStyle, { alignSelf: 'flex-start' }]} onPress={() => {
+                                    Table_order();
                                     Empty();
+
 
                                 }}>
                                     <Text style={{ alignSelf: 'center', color: 'white', fontSize: wp('1.5%'), alignSelf: 'center', fontWeight: 'bold' }}>Void</Text>
@@ -508,13 +645,26 @@ const SubTakeway = (props) => {
                                     </View>
                                 </> : null}
                             <View style={{ flex: 1, marginRight: 10 }}>
-                                <TouchableOpacity
-                                    style={{ alignSelf: 'center', width: wp('15%'), height: hp('6%'), borderWidth: 1, borderRadius: 3, justifyContent: "center", backgroundColor: 'red' }}
-                                    onPress={() => {
-                                        setSelect("Pay");
-                                    }}>
-                                    <Text style={{ alignSelf: 'center', color: 'white', fontSize: wp('1.5%'), alignSelf: 'center', fontWeight: 'bold' }}>Pay </Text>
-                                </TouchableOpacity>
+                                {props.table_pass == 'table' ?
+                                    <TouchableOpacity
+                                        disabled={table_order_detail.arr.map(i => i.payment_status) == 'paid' ? true : false}
+                                        style={table_order_detail.arr.map(i => i.payment_status) == 'paid' ? { alignSelf: 'center', width: wp('15%'), height: hp('6%'), borderWidth: 1, borderRadius: 3, justifyContent: "center", backgroundColor: 'pink' } : { alignSelf: 'center', width: wp('15%'), height: hp('6%'), borderWidth: 1, borderRadius: 3, justifyContent: "center", backgroundColor: 'red' }}
+                                        onPress={() => {
+                                            setSelect("Pay");
+                                        }}>
+                                        <Text style={{ alignSelf: 'center', color: 'white', fontSize: wp('1.5%'), alignSelf: 'center', fontWeight: 'bold' }}>{table_order_detail.arr.map(i => i.payment_status) == 'paid' ? 'Paid' : 'Pay'} </Text>
+                                    </TouchableOpacity>
+                                    :
+                                    <TouchableOpacity
+
+                                        style={{ alignSelf: 'center', width: wp('15%'), height: hp('6%'), borderWidth: 1, borderRadius: 3, justifyContent: "center", backgroundColor: 'red' }}
+                                        onPress={() => {
+                                            setSelect("Pay");
+                                        }}>
+                                        <Text style={{ alignSelf: 'center', color: 'white', fontSize: wp('1.5%'), alignSelf: 'center', fontWeight: 'bold' }}>Pay </Text>
+                                    </TouchableOpacity>}
+
+
                             </View>
                         </View>
                     </View>
@@ -539,7 +689,7 @@ const SubTakeway = (props) => {
 
                     <View style={{ flex: 0.5, backgroundColor: 'white' }}>
 
-                        {select === 'Burger' ? <Burger variantCallback={variantCallback} reload={reload} addNewItem={addNewItem} branch={br} Cat_id={cat_id} /> : select === 'Pay' ? <Pay pay={Total} branch={br} D={data} userid={props.userId} t_id={tableIds} member={count} reload={reload} addNewItem={addNewItem} Empty={Empty} Call={callback} function={fun} statename={props.pass} Cat_id={cat_id} /> : select == 'cash' ?
+                        {select === 'Burger' ? <Burger variantCallback={variantCallback} reload={reload} addNewItem={addNewItem} branch={br} Cat_id={cat_id} /> : select === 'Pay' ? <Pay refresh={reload} pay={props.table_pass == 'table' ? table_order_detail.arr.map(i => i.sum) : props.table_pass == 'notable' ? Total : null} branch={br} D={data} userid={props.userId} t_id={tableIds} member={count} reload={reload} addNewItem={addNewItem} Empty={Empty} Call={callback} function={fun} statename={props.pass} Cat_id={cat_id} T_order_id={props.table_pass == 'table' ? table_order_detail.arr.map(i => i.id) : null} table_pass={props.table_pass} T_order_sum={props.table_pass == 'table' ? table_order_detail.arr.map(i => i.sum) : null} /> : select == 'cash' ?
 
                             <>
                                 <View style={{ borderBottomWidth: 0.4, height: 50, flexDirection: 'row', backgroundColor: 'rgb(240,240,240)' }}>
@@ -679,7 +829,7 @@ const SubTakeway = (props) => {
                     <Takeway branch={br} idUser={props.userId} /> : state == 'Main' ? <MainDashborad br={br} Key={Id} /> : null
             }
 
-            {renderVariantModal()}
+            { renderVariantModal()}
         </>
     );
 }
@@ -689,7 +839,7 @@ export default SubTakeway;
 const styles = {
     textStyle: {
         fontSize: wp('1.3%'),
-        alignSelf: 'center'
+        alignSelf: 'center',
     },
     viewStyle: {
 
@@ -788,5 +938,24 @@ const styles = {
         marginLeft: 5,
         borderWidth: 1,
         borderRadius: 25
+    },
+    modalView: {
+        marginTop: '12%',
+        backgroundColor: "white",
+        borderRadius: 20,
+        height: hp('50%'),
+        width: '20%',
+        alignSelf: 'center',
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 10,
+            height: 10
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 8,
+        justifyContent: 'center',
+        padding: 2
     },
 };

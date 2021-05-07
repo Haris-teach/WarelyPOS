@@ -1,5 +1,4 @@
 import * as React from "react";
-import { TouchableOpacity, Image } from 'react-native';
 import Pin from "../authntication/Pin";
 import AmountConfirm from "../authntication/AmountConfirm";
 import Login from '../authntication/Login'
@@ -12,6 +11,11 @@ import Setting from '../screens/Setting';
 import SubTakeway from '../screens/SubTakeway';
 import Takeway from '../screens/Takeway';
 import Reciept from '../screens/Reciept';
+import CloseSale from '../screens/closeSale';
+
+
+
+
 const Stack = createStackNavigator();
 
 const StackNavi = () => {
@@ -27,6 +31,12 @@ const StackNavi = () => {
       <Stack.Screen
         name="Shift"
         component={Shift}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="closeSale"
+        component={CloseSale}
         options={{ headerShown: false }}
       />
 

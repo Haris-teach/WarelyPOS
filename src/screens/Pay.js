@@ -15,13 +15,12 @@ const Pay = (props) => {
     const br = props.branch;
     const Data = props.D;
 
-
-
+    console.log(props.T_order_id)
 
 
     return (
         <>
-            {state == 'Burger' ? <Burger branch={br} Cat_id={props.Cat_id} addNewItem={props.addNewItem} reload={props.reload} /> : state == 'Paymode' ? <Paymode total={Total} D={Data} branch={br} userid={props.userid} table_id={props.t_id} count={props.member} reload={props.reload} addNewItem={props.addNewItem} Empty={props.Empty} callback={props.Call} func={props.function} Statename={props.statename} Cat_id={props.Cat_id} /> :
+            {state == 'Burger' ? <Burger branch={br} Cat_id={props.Cat_id} addNewItem={props.addNewItem} reload={props.reload} /> : state == 'Paymode' ? <Paymode refresh={props.refresh} T_order_sum={props.T_order_sum} T_order_id={props.T_order_id} table_pass={props.table_pass} total={Total} D={Data} branch={br} userid={props.userid} table_id={props.t_id} count={props.member} reload={props.reload} addNewItem={props.addNewItem} Empty={props.Empty} callback={props.Call} func={props.function} Statename={props.statename} Cat_id={props.Cat_id} /> :
                 <>
                     <ScrollView style={{ flex: 2 }}>
 

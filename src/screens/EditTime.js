@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useSelector, useDispatch } from 'react-redux';
 
 const EditTime = ({ navigation, route }) => {
   const [currentTime, setCurrentTime] = useState('');
@@ -15,6 +16,7 @@ const EditTime = ({ navigation, route }) => {
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
   const [time, setTime] = useState(new Date());
+  const { stf_name } = useSelector((state) => state.root.main);
 
   const onChange = (event, selectedValue) => {
     setShow(Platform.OS === 'ios');
@@ -95,7 +97,7 @@ const EditTime = ({ navigation, route }) => {
               alignSelf: "center",
             }}
           >
-            <Text style={styles.TextStyle}>Hello JIMMY</Text>
+            <Text style={styles.TextStyle}>Hello {stf_name}</Text>
           </View>
 
           <View style={{ marginTop: -5, alignSelf: 'flex-end' }}>
@@ -129,7 +131,7 @@ const EditTime = ({ navigation, route }) => {
             <TouchableOpacity
               style={styles.ButtonView}
               onPress={() =>
-                navigation.navigate("AmountConfirm", { Loc_id: branch, userid: Key })
+                navigation.navigate("AmountConfirm", { Loc_id: branch, userid: Key, E_time: formatDate(time) })
               }
             >
 
@@ -219,7 +221,6 @@ const styles = StyleSheet.create({
   ButtonViewText: {
     color: "#ffffff",
     fontWeight: "bold",
-    marginTop: 5,
     fontSize: wp('1.5%')
   },
 

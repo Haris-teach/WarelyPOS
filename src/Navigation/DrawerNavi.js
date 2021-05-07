@@ -6,8 +6,12 @@ import {
     Text
 } from 'react-native-paper';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useSelector, useDispatch } from 'react-redux';
+import { Call } from '../Redux/Reducers/mainReducer';
 
-const DrawerNavigate = (props) => {
+const DrawerNavigate = (props, route) => {
+    const dispatch = useDispatch();
+    const { fun } = useSelector((state) => state.root.main);
     return (
         <DrawerContentScrollView {...props}>
             <Drawer.Section style={styles.drawerSection}>
@@ -61,6 +65,7 @@ const DrawerNavigate = (props) => {
                     label={Lable6}
                     onPress={() => {
                         props.navigation.closeDrawer();
+                        dispatch(Call(true));
                     }}
                 />
 
@@ -114,6 +119,7 @@ const Lable4 = () => {
 };
 
 const Lable6 = () => {
+
     return (
 
         <View style={{

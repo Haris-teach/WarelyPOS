@@ -19,7 +19,7 @@ export default class APIHandler {
         };
 
         var axiosClient = axios(options).then(response => {
-            console.log("API respones", response.data);
+            // console.log("API respones", response.data);
 
             return response.data;
         }).catch(error => {

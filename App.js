@@ -2,12 +2,17 @@ import React from 'react';
 import DrawerNavigate from './src/Navigation/DrawerNavi';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { StatusBar, SafeAreaView, ScrollView, Text } from 'react-native'
+import { StatusBar } from 'react-native'
 import StackNavi from './src/Navigation/Stacknavigation';
 const Drawer = createDrawerNavigator();
+import { store } from './src/Redux/store';
+import { Provider } from 'react-redux';
+
+
 const App = () => {
   return (
-    <>
+
+    <Provider store={store}>
 
       <NavigationContainer>
         <StatusBar backgroundColor="red" barStyle="white" />
@@ -21,7 +26,7 @@ const App = () => {
         </Drawer.Navigator>
       </NavigationContainer>
 
-    </>
+    </Provider>
   );
 }
 

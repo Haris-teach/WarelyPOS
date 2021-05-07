@@ -13,9 +13,10 @@ const Paymode = (props) => {
 
 
 
+
     return (
         <>
-            {state == 'Pay' ? <Pay /> : state == 'Cash' ? <Cash pass='Payable' Cat_id={props.Cat_id} total={Total} D={Data} branch={branch} t_id={props.table_id} member={props.count} userid={props.userid} reload={props.reload} addNewItem={props.addNewItem} Empty={props.Empty} Call={props.callback} function={props.func} statename={props.Statename} /> : state == 'Card' ? <Card /> :
+            {state == 'Pay' ? <Pay /> : state == 'Cash' ? <Cash refresh={props.refresh} T_order_sum={props.T_order_sum} pass='Payable' Cat_id={props.Cat_id} total={Total} D={Data} branch={branch} t_id={props.table_id} member={props.count} userid={props.userid} reload={props.reload} addNewItem={props.addNewItem} Empty={props.Empty} Call={props.callback} function={props.func} statename={props.Statename} T_order_id={props.T_order_id} table_pass={props.table_pass} /> : state == 'Card' ? <Card /> :
 
                 <>
 

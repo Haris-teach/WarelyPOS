@@ -8,13 +8,18 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import APIHandler from "../utils/APIHandler";
 import { Branches, Branch_User } from "../utils/urls";
 import CustomActivityIndicator from "../components/generic/CustomActivityIndicator";
+import { useSelector, useDispatch } from 'react-redux';
+import { Stf_Name, Loc_ID } from '../Redux/Reducers/mainReducer';
 
 const Login = ({ navigation }) => {
 
-  const [value, setValue] = useState(null);
-  const [items, setItems] = useState([
 
-  ]);
+  const dispatch = useDispatch()
+  const { stf_name, loc_id } = useSelector((state) => state.root.main);
+
+  console.log('----STF  name---', stf_name)
+  const [value, setValue] = useState(null);
+  const [items, setItems] = useState([]);
   const [data, setData] = useState([]);
 
   const [branchid, setBranchid] = useState();
@@ -39,10 +44,9 @@ const Login = ({ navigation }) => {
   useEffect(() => {
     APIHandler.hitApi(Branches, 'GET').then(response => {
       setItems(response);
+
     });
   }, []);
-
-
 
   return (
     <View style={styles.container}>
@@ -83,8 +87,10 @@ const Login = ({ navigation }) => {
             }}
             dropDownStyle={{ backgroundColor: "white" }}
             onChangeItem={(item) => {
-              setValue(item.value); setBranchid(item.id)
-              User_Branch(item.id)
+              setValue(item.value);
+              setBranchid(item.id);
+              User_Branch(item.id);
+              dispatch(Loc_ID(item.id));
             }
 
             }
@@ -101,7 +107,12 @@ const Login = ({ navigation }) => {
 
                 {item.location_id == branchid ?
                   <TouchableOpacity
-                    onPress={() => navigation.navigate("Pin", { paramKey: item.id, branchId: branchid })}
+                    onPress={() => {
+                      navigation.navigate("Pin", { paramKey: item.id, branchId: branchid });
+                      dispatch(Stf_Name(item.first_name));
+                    }
+                    }
+
                   >
 
                     <View style={styles.UserView}>

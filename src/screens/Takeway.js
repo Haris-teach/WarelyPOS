@@ -8,6 +8,7 @@ import { DATA } from '../Model/Data';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Order_History, Order_Pending } from "../utils/urls";
 import APIHandler from "../utils/APIHandler";
+import { useSelector, useDispatch } from 'react-redux';
 
 
 
@@ -26,17 +27,18 @@ const Takeway = (props) => {
   const Key = props.idUser;
   const token = '$2y$10$f43enwo0NWLsBmlGfx/ZMevMgmvEdbrZ3JTF.FNoVM4Nrj2aZYE82';
   const [array, setArray] = useState(DATA);
+  const { stf_id, loc_id } = useSelector((state) => state.root.main);
 
 
-
+  console.log(branch, order_Id, status, Key)
 
   useEffect(() => {
 
     let param = {
-      loc_id: branch,
+      loc_id: loc_id,
       id: order_Id,
       Status: status,
-      stf_id: Key,
+      stf_id: stf_id,
     };
 
     APIHandler.hitApi(Order_Pending, 'POST', param).then(response => setValue(response));
@@ -75,12 +77,13 @@ const Takeway = (props) => {
 
 
 
-      {state === 'Sub' ? <SubTakeway emp={array} Pass='table' br={branch} User_id={id} pass='Takeway' orID={order_Id} Table='Takeaway' userId={Key} /> : state == 'detail' ? <Takeway_dt order_ID={order_Id} /> :
+      {state === 'Sub' ? <SubTakeway emp={array} Pass='table' br={branch} User_id={id} pass='Takeway' orID={order_Id} Table='Takeaway' userId={Key} table_pass='notable' /> : state == 'detail' ? <Takeway_dt order_ID={order_Id} /> :
         <>
           <View style={{ backgroundColor: 'white', width: wp('100%') }}>
             <TouchableOpacity style={{ flexDirection: 'row', borderRadius: 5, borderColor: '#FF2E2E', borderWidth: 1, width: wp('20%'), height: hp('6%'), margin: hp('3%'), justifyContent: 'center' }} onPress={() => {
               setState('Sub');
               EmptyArray();
+
             }}>
               <Image
                 source={require('../assets/plus.jpg')}

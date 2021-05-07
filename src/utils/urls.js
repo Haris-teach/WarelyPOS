@@ -14,6 +14,12 @@ export const Table_res = BASE_URL + "table_res";
 export const Takeaway_Order = BASE_URL + "order_saved";
 export const Print_Slip = BASE_URL + "print";
 export const PRODUCT_CAT = BASE_URL + "cat";
+export const TABLE_DETAIL = BASE_URL + "t_order_dt";
+export const Dine_in_pay_later = BASE_URL + "table_res_pay";
+export const Table_Close = BASE_URL + "table_close";
+export const Pos_sell_start = BASE_URL + "pos_sell_start";
+export const Pos_sell_end = BASE_URL + "pos_sell_end";
+
 
 
 

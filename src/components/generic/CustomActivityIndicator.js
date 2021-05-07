@@ -8,13 +8,13 @@ const CustomActivityIndicator = () => {
             width: '100%',
             justifyContent: 'center',
             alignItems: 'center',
-
+            backgroundColor: 'rgb(0.5,0,0,0.5)',
             position: 'absolute',
         }}>
             <ActivityIndicator
                 animating={true}
                 size="large"
-                color="#0000ff" />
+                color="red" />
         </View>
     );
 }
