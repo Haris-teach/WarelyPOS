@@ -13,7 +13,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import APIHandler from "../utils/APIHandler";
 import { Pos_sell_start } from "../utils/urls";
 import { useSelector, useDispatch } from 'react-redux';
-import { Stf_id, Call } from '../Redux/Reducers/mainReducer';
+import { Stf_id, Call, SetPoss_end } from '../Redux/Reducers/mainReducer';
 
 
 
@@ -132,6 +132,7 @@ const AmountConfirm = ({ navigation, route }) => {
             Pos_Sell_Start();
             dispatch(Stf_id(Key));
             dispatch(Call(false));
+            dispatch(SetPoss_end(false));
           }}
         >
           <Text

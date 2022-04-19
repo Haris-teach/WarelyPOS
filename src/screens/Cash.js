@@ -34,15 +34,15 @@ const Cash = (props) => {
         <>
             {state == 'Payable' ? <Payable refresh={props.refresh} T_order_sum={props.T_order_sum} T_order_id={props.T_order_id} table_pass={props.table_pass} Value={value} Cat_id={props.Cat_id} total={Total} D={Data} branch={branch} userid={props.userid} table_id={props.t_id} count={props.member} reload={props.reload} addNewItem={props.addNewItem} Empty={props.Empty} callback={props.Call} func={props.function} Statename={props.statename} /> : state == 'Pager' ? <Pager /> : state == 'Paymode' ? <Paymode /> :
                 <>
-                    <View style={{ borderBottomWidth: 0.4, height: 50, flexDirection: 'row', backgroundColor: 'rgb(240,240,240)' }}>
-                        <Text style={{ alignSelf: 'center', flex: 1, fontSize: wp('1.4%'), marginLeft: 30, fontWeight: 'bold', opacity: 0.5 }}>Recived amount</Text>
+                    <View style={{ height: hp('8%'), flexDirection: 'row', backgroundColor: '#FFFFFF' }}>
+                        <Text style={{ alignSelf: 'center', flex: 1, fontSize: wp('1.3%'), opacity: 0.3 }}>Recived amount</Text>
 
-                        {/* <Text style={{ fontSize: 10, alignSelf: 'center', marginRight: 20 }} onPress={() => setState('Paymode')}>Back</Text> */}
+                        <Text style={{ fontSize: wp('1.3%'), fontWeight: 'bold', alignSelf: 'center', marginRight: 20, color: 'red' }} onPress={() => setState('Paymode')}>Back</Text>
                     </View>
 
-                    <View style={{ backgroundColor: 'rgb(230,240,230)', height: '8%', flexDirection: 'row', justifyContent: 'center' }}>
-                        <Text style={{ color: 'red', alignSelf: 'center', fontSize: wp('2%') }}>$</Text>
-                        <Text style={{ color: 'black', alignSelf: 'center', fontSize: wp('2%') }}>{value}</Text>
+                    <View style={{ backgroundColor: '#ECECEC', height: '8%', flexDirection: 'row', justifyContent: 'center', marginLeft: 6, marginRight: 6 }}>
+                        <Text style={{ color: 'black', alignSelf: 'center', fontSize: wp('2%'), fontWeight: 'bold' }}>$</Text>
+                        <Text style={{ color: 'red', alignSelf: 'center', fontSize: wp('2%') }}>{value}</Text>
                     </View>
 
 

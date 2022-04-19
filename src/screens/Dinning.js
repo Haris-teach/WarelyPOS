@@ -11,21 +11,24 @@ import Pickup from './Pickup';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import SubTakeway from './SubTakeway';
 import APIHandler from '../utils/APIHandler';
-import { Get_Tables, Dine_Order } from '../utils/urls';
+import { Get_Tables, Dine_Order, Pos_sell_end } from '../utils/urls';
 import CustomActivityIndicator from "../components/generic/CustomActivityIndicator";
-
+import { useSelector, useDispatch } from 'react-redux';
+import { Call, Stf_Name, SaleClose, SetSelect } from '../Redux/Reducers/mainReducer';
 
 
 
 var mergedTables = []
 
 const MainDashboard = (props) => {
+  const dispatch = useDispatch();
   const [isLoading, setLoading] = useState(false);
   const [selectMerge, setSelectMerge] = useState(false);
+  const { fun, stf_name, saleClose, select, stf_id, loc_id } = useSelector((state) => state.root.main);
   // MAin TAB BAR
-  const [select, setSelect] = useState(0);
-  const br = props.br;
-  const Key = props.Key;
+  const [sel, setSel] = useState(0);
+  const br = loc_id;
+  const Key = stf_id;
   const [res, setRes] = useState();
   const [dayData, setDayData] = useState([]);
 
@@ -33,7 +36,7 @@ const MainDashboard = (props) => {
   const [date, setDate] = useState();
 
   const updateIn = (s) => {
-    setSelect(s);
+    setSel(s);
   };
   const btn1 = () => <Text style={{ fontWeight: 'bold', fontSize: wp('1.5%'), color: 'white', marginRight: 10 }}>DINING</Text>
   const btn2 = () => <Text style={{ fontWeight: 'bold', fontSize: wp('1.5%'), color: 'white', marginLeft: 10, }}>TAKEAWAY</Text>
@@ -142,6 +145,7 @@ const MainDashboard = (props) => {
     setDate(dateStr);
 
 
+
     let params = {
       loc_id: br,
       stf_id: Key,
@@ -161,9 +165,6 @@ const MainDashboard = (props) => {
     };
 
     APIHandler.hitApi(Dine_Order, 'POST', params).then(response => setDayData(response));
-
-
-
   }
 
   const selectedTableForMerge = (index) => {
@@ -255,6 +256,22 @@ const MainDashboard = (props) => {
     );
   }
 
+  useEffect(() => {
+    let param = {
+      stf_id: Key,
+    };
+
+    APIHandler.hitApi(Pos_sell_end, 'POST', param).then(json => {
+      dispatch(SaleClose(json));
+      console.log("123+++++++++", json);
+
+    });
+
+    dispatch(Call(false));
+
+  }, []);
+  console.log("Pos_sell_end in Dinning===", saleClose)
+
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       {renderModal()}
@@ -262,7 +279,7 @@ const MainDashboard = (props) => {
 
 
       <>
-        {select == 0 ?
+        {sel == 0 ?
           <>
             { state == true ? <SubTakeway T_order_id={t_order_id} mergedTables={mergedTables} Pass='table' br={br} Table={table} pass="Main" table_pass={table_condi} Count={count} Table_Id={table_id} userId={Key} response={res} /> :
               <>
@@ -306,8 +323,7 @@ const MainDashboard = (props) => {
                       dropDownStyle={{ backgroundColor: "white" }}
                       onChangeItem={(item) => {
                         setBranch(item.value);
-                        setDay_id(item.id);
-                        Day(day_id);
+                        Day(item.id);
                       }}
                     />
 
@@ -321,7 +337,7 @@ const MainDashboard = (props) => {
                             <View style={{ flexDirection: 'row', backgroundColor: item.bcolor, height: hp('10%'), }}>
                               <View style={{ marginLeft: 10, marginTop: 5, alignSelf: 'center' }}>
 
-                                <Text style={{ fontSize: wp('2%'), fontWeight: 'bold', color: 'red' }}>{item.Time.slice(0, -3)}  </Text>
+                                <Text style={{ fontSize: wp('2%'), fontWeight: 'bold', color: 'red' }}>{item.Time}  </Text>
                                 <Text style={{ alignSelf: 'center', fontSize: wp('1.5%'), color: 'black' }}>{item.To}       </Text>
 
                               </View>
@@ -462,6 +478,7 @@ const MainDashboard = (props) => {
                                         setT_order_id(item.order_id);
 
                                       }
+                                      dispatch(SetSelect('Burger'));
                                     } else {
                                       setState(true);
                                       ToastAndroid.show(item.table + "  is Booked !", ToastAndroid.SHORT);
@@ -470,7 +487,7 @@ const MainDashboard = (props) => {
                                       setTable_condi('table');
                                       const obj = { 'table': item.table };
                                       mergedTables = [obj];
-
+                                      dispatch(SetSelect('Burger'));
                                     }
                                   }}>
                                   <View style={item.status === "free" ? styles.freeTable : [styles.bookedTable, { borderColor: selectMerge ? '#b5b5b5' : '#FF2E2E', }]}>
@@ -505,7 +522,7 @@ const MainDashboard = (props) => {
               </>
             }
           </>
-          : select == 1 ? <Takeway branch={br} idUser={Key} /> : select == 2 ? <Delivery /> : select == 3 ? <Pickup /> : null}
+          : sel == 1 ? <Takeway branch={br} idUser={Key} /> : sel == 2 ? <Delivery /> : sel == 3 ? <Pickup /> : null}
       </>
     </View>
   );

@@ -28,6 +28,7 @@
 		EFCBCC2F356346228B6DEB99 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9AB5302982674693AB011919 /* Octicons.ttf */; };
 		EB4E3F08FD174AA1937BC476 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BA27841F406B4C29A4FE244C /* SimpleLineIcons.ttf */; };
 		12C4AFE2AF9D47C09BE64F1B /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E42D6D08DEA4183A3F57123 /* Zocial.ttf */; };
+		6629BB2908824939B961AB5B /* libRNBluetoothEscposPrinter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E8256B8149B411EAFE6628D /* libRNBluetoothEscposPrinter.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +69,8 @@
 		9AB5302982674693AB011919 /* Octicons.ttf */ = {isa = PBXFileReference; name = "Octicons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		BA27841F406B4C29A4FE244C /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; name = "SimpleLineIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		8E42D6D08DEA4183A3F57123 /* Zocial.ttf */ = {isa = PBXFileReference; name = "Zocial.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		AE8DEE5F2DF54D5592DE3AD5 /* RNBluetoothEscposPrinter.xcodeproj */ = {isa = PBXFileReference; name = "RNBluetoothEscposPrinter.xcodeproj"; path = "../node_modules/react-native-bluetooth-escpos-printer/ios/RNBluetoothEscposPrinter.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		5E8256B8149B411EAFE6628D /* libRNBluetoothEscposPrinter.a */ = {isa = PBXFileReference; name = "libRNBluetoothEscposPrinter.a"; path = "libRNBluetoothEscposPrinter.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6629BB2908824939B961AB5B /* libRNBluetoothEscposPrinter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,6 +133,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				AE8DEE5F2DF54D5592DE3AD5 /* RNBluetoothEscposPrinter.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -380,6 +385,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/warely.app/warely";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/..",
+				);
 			};
 			name = Debug;
 		};
@@ -403,6 +416,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/warely.app/warely";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/..",
+				);
 			};
 			name = Release;
 		};
@@ -428,6 +449,10 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/..",
+				);
 			};
 			name = Debug;
 		};
@@ -451,6 +476,10 @@
 				PRODUCT_NAME = warely;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/..",
+				);
 			};
 			name = Release;
 		};

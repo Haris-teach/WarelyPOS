@@ -19,6 +19,12 @@ const Paymode = (props) => {
             {state == 'Pay' ? <Pay /> : state == 'Cash' ? <Cash refresh={props.refresh} T_order_sum={props.T_order_sum} pass='Payable' Cat_id={props.Cat_id} total={Total} D={Data} branch={branch} t_id={props.table_id} member={props.count} userid={props.userid} reload={props.reload} addNewItem={props.addNewItem} Empty={props.Empty} Call={props.callback} function={props.func} statename={props.Statename} T_order_id={props.T_order_id} table_pass={props.table_pass} /> : state == 'Card' ? <Card /> :
 
                 <>
+                    <View style={{ borderBottomWidth: 0.4, height: 70, flexDirection: 'row', }}>
+                        <Text style={{ alignSelf: 'center', flex: 1, fontSize: wp('1.3%'), marginLeft: 30, fontWeight: 'bold', opacity: 0.5 }}></Text>
+
+                        <Text style={{ fontSize: wp('1.3%'), fontWeight: 'bold', alignSelf: 'center', marginRight: 20 }} onPress={() => setState('Pay')}>Back</Text>
+                    </View>
+
 
                     <View style={{ alignSelf: 'center', marginTop: '10%' }}>
                         <Text style={{ fontSize: wp('1.5%'), color: 'red' }}>PAYMENT MODE</Text>

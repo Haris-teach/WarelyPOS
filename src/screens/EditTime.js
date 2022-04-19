@@ -16,7 +16,7 @@ const EditTime = ({ navigation, route }) => {
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
   const [time, setTime] = useState(new Date());
-  const { stf_name } = useSelector((state) => state.root.main);
+  const { stf_name, poss_end } = useSelector((state) => state.root.main);
 
   const onChange = (event, selectedValue) => {
     setShow(Platform.OS === 'ios');
@@ -54,7 +54,7 @@ const EditTime = ({ navigation, route }) => {
     else {
       var min = time.getMinutes();
     }
-    if (time.getHours() < 9) {
+    if (time.getHours() <= 9) {
       var hour = '0' + time.getHours();
     }
     else {
@@ -130,8 +130,14 @@ const EditTime = ({ navigation, route }) => {
 
             <TouchableOpacity
               style={styles.ButtonView}
-              onPress={() =>
-                navigation.navigate("AmountConfirm", { Loc_id: branch, userid: Key, E_time: formatDate(time) })
+              onPress={() => {
+                if (poss_end == true) {
+                  navigation.navigate("AmountConfirm", { Loc_id: branch, userid: Key, E_time: formatDate(time) });
+                }
+                else {
+                  navigation.navigate("Dinning", { Loc_id: branch, userid: Key })
+                }
+              }
               }
             >
 

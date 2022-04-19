@@ -7,6 +7,7 @@ import Outdoor from "./Outdoor";
 import Edit from "./Edit";
 import Takeway from './Takeway';
 import Delivery from './Delivery';
+import MainDashborad from './Dinning';
 import Pickup from './Pickup';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import SubTakeway from './SubTakeway';
@@ -14,19 +15,19 @@ import APIHandler from '../utils/APIHandler';
 import { Get_Tables, Dine_Order, Pos_sell_end } from '../utils/urls';
 import CustomActivityIndicator from "../components/generic/CustomActivityIndicator";
 import { useSelector, useDispatch } from 'react-redux';
-import { Call, Stf_Name } from '../Redux/Reducers/mainReducer';
+import { Call, Stf_Name, SaleClose, SetSelect, SetPoss_end, SetSel } from '../Redux/Reducers/mainReducer';
 
 
 var mergedTables = []
 
 const Dinning = ({ route, navigation }) => {
   const [isLoading, setLoading] = useState(false);
-  const { fun, stf_name } = useSelector((state) => state.root.main);
+  const { fun, stf_name, saleClose, select, loc_id, stf_id, sel } = useSelector((state) => state.root.main);
   const [selectMerge, setSelectMerge] = useState(false);
   // MAin TAB BAR
-  const [select, setSelect] = useState(0);
-  const br = route.params?.Loc_id;
-  const Key = route.params?.userid;
+
+  const br = loc_id;
+  const Key = stf_id;
   const [res, setRes] = useState();
   const [dayData, setDayData] = useState([]);
 
@@ -34,7 +35,7 @@ const Dinning = ({ route, navigation }) => {
   const [date, setDate] = useState();
 
   const updateIn = (s) => {
-    setSelect(s);
+    dispatch(SetSel(s));
   };
   const btn1 = () => <Text style={{ fontWeight: 'bold', fontSize: wp('1.5%'), color: 'white', marginRight: 10 }}>DINING</Text>
   const btn2 = () => <Text style={{ fontWeight: 'bold', fontSize: wp('1.5%'), color: 'white', marginLeft: 10, }}>TAKEAWAY</Text>
@@ -171,9 +172,6 @@ const Dinning = ({ route, navigation }) => {
     };
 
     APIHandler.hitApi(Dine_Order, 'POST', params).then(response => setDayData(response));
-
-
-
   }
 
   const selectedTableForMerge = (index) => {
@@ -267,18 +265,22 @@ const Dinning = ({ route, navigation }) => {
   }
 
 
-  const [response, setResponse] = useState([{ "created_at": "2021-05-06 18:16:54", "end_sell": "0", "end_time": "06:16:55", "id": 31, "open_sell": null, "start_time": "17:46:00", "stf_id": "8", "updated_at": "2021-05-06 18:16:54" }]);
+
   useEffect(() => {
     let param = {
       stf_id: Key,
     };
 
-    APIHandler.hitApi(Pos_sell_end, 'POST', param).then(res => setResponse(res));
+    APIHandler.hitApi(Pos_sell_end, 'POST', param).then(json => {
+      dispatch(SaleClose(json));
+
+    });
 
     dispatch(Call(false));
 
   }, []);
-  console.log("Pos_sell_end===", response);
+
+
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       {renderModal()}
@@ -298,7 +300,7 @@ const Dinning = ({ route, navigation }) => {
         <View>
           <ButtonGroup
             onPress={updateIn}
-            selecte={select}
+            selecte={sel}
             buttons={button}
             containerStyle={{ height: hp('6%'), backgroundColor: 'red', width: "40%", marginLeft: wp('6%'), marginTop: hp('-7%'), borderColor: 'red', marginBottom: 2 }}
             selectedButtonStyle={{ backgroundColor: 'green' }}
@@ -327,7 +329,7 @@ const Dinning = ({ route, navigation }) => {
 
 
       <>
-        {select == 0 ?
+        {sel == 0 ?
           <>
             { state == true ? <SubTakeway T_order_id={t_order_id} mergedTables={mergedTables} Pass='table' br={br} Table={table} pass="Main" table_pass={table_condi} Count={count} Table_Id={table_id} userId={Key} response={res} /> :
               <>
@@ -371,8 +373,7 @@ const Dinning = ({ route, navigation }) => {
                       dropDownStyle={{ backgroundColor: "white" }}
                       onChangeItem={(item) => {
                         setBranch(item.value);
-                        setDay_id(item.id);
-                        Day(day_id);
+                        Day(item.id);
                       }}
                     />
 
@@ -386,7 +387,7 @@ const Dinning = ({ route, navigation }) => {
                             <View style={{ flexDirection: 'row', backgroundColor: item.bcolor, height: hp('10%'), }}>
                               <View style={{ marginLeft: 10, marginTop: 5, alignSelf: 'center' }}>
 
-                                <Text style={{ fontSize: wp('2%'), fontWeight: 'bold', color: 'red' }}>{item.Time.slice(0, -3)}  </Text>
+                                <Text style={{ fontSize: wp('2%'), fontWeight: 'bold', color: 'red' }}>{item.Time}  </Text>
                                 <Text style={{ alignSelf: 'center', fontSize: wp('1.5%'), color: 'black' }}>{item.To}       </Text>
 
                               </View>
@@ -527,6 +528,7 @@ const Dinning = ({ route, navigation }) => {
                                         setT_order_id(item.order_id);
 
                                       }
+                                      dispatch(SetSelect('Burger'));
                                     }
                                     else {
                                       setState(true);
@@ -534,6 +536,7 @@ const Dinning = ({ route, navigation }) => {
                                       setTable(item.table);
                                       setT_order_id(item.order_id);
                                       setTable_condi('table');
+                                      dispatch(SetSelect('Burger'));
                                     }
                                   }}>
                                   <View style={item.status === "free" ? styles.freeTable : [styles.bookedTable, { borderColor: selectMerge ? '#b5b5b5' : '#FF2E2E', }]}>
@@ -568,7 +571,7 @@ const Dinning = ({ route, navigation }) => {
               </>
             }
           </>
-          : select == 1 ? <Takeway branch={br} idUser={Key} /> : select == 2 ? <Delivery /> : select == 3 ? <Pickup /> : null}
+          : sel == 1 ? <Takeway branch={br} idUser={Key} /> : sel == 2 ? <Delivery /> : sel == 3 ? <Pickup /> : sel == 4 ? <MainDashborad br={br} Key={Key} /> : null}
       </>
       <View>
         <Modal
@@ -578,7 +581,7 @@ const Dinning = ({ route, navigation }) => {
           visible={fun}
           onRequestClose={() => {
 
-            dispatch(Call(false));
+            dispatch(Call(!fun));
           }}
         >
 
@@ -591,33 +594,33 @@ const Dinning = ({ route, navigation }) => {
 
 
             <View style={{ marginBottom: 2, alignItems: 'center' }}>
-              <Text style={{ fontSize: 30, fontWeight: 'bold' }}>{stf_name}</Text>
+              <Text style={{ fontWeight: 'bold' }}>{stf_name}</Text>
 
             </View>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 5 }}>
               <Text style={{ fontWeight: 'bold' }}>Check in Time</Text>
-              <Text>{response.map(i => i.start_time)}</Text>
+              <Text>{saleClose.map(i => i.start_time)}</Text>
             </View>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 5 }}>
               <Text style={{ fontWeight: 'bold' }}>Check out Time</Text>
-              <Text>{response.map(i => i.end_time)}</Text>
+              <Text>{saleClose.map(i => i.end_time)}</Text>
             </View>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 5 }}>
               <Text style={{ fontWeight: 'bold' }}>Check in amount</Text>
-              <Text>{response.map(i => i.open_sell)}</Text>
+              <Text>{saleClose.map(i => i.open_sell)}</Text>
             </View>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 5 }}>
               <Text style={{ fontWeight: 'bold' }}>Check out amount</Text>
-              <Text>${response.map(i => i.end_sell)}</Text>
+              <Text>${saleClose.map(i => i.end_sell)}</Text>
             </View>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 5 }}>
-              <Text style={{ fontWeight: 'bold' }}>Check out amount</Text>
-              <Text>${response.map(i => i.end_sell) - response.map(i => i.open_sell)}</Text>
+              <Text style={{ fontWeight: 'bold' }}>Total Sale</Text>
+              <Text>${parseInt(saleClose.map(i => i.end_sell)) + parseInt(saleClose.map(i => i.open_sell))}</Text>
             </View>
 
 
@@ -635,6 +638,7 @@ const Dinning = ({ route, navigation }) => {
                 onPress={() => {
                   dispatch(Call(false));
                   navigation.navigate('Login');
+                  dispatch(SetPoss_end(true));
                 }}>
                 <Text style={{ color: 'white', alignSelf: 'center', fontSize: wp('1.3%') }}>Confirm</Text>
               </TouchableOpacity>

@@ -6,17 +6,22 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CustomActivityIndicator from "../components/generic/CustomActivityIndicator";
 import APIHandler from "../utils/APIHandler";
-import { SALE_HISTORY, SALE_HISTORY_DETAIL, Table_return } from "../utils/urls";
+import { SALE_HISTORY, SALE_HISTORY_DETAIL, Table_return, Re_print } from "../utils/urls";
 import Takeway from './Takeway';
 import Delivery from './Delivery';
 import Pickup from './Pickup';
-import Dinein from './Dinning2';
 
+import RNPrint from 'react-native-print';
+import MainDashboard from './Dinning';
+import { useSelector, useDispatch } from 'react-redux';
+import { SetSale_his } from '../Redux/Reducers/mainReducer';
 
 
 const SaleHistory = (route) => {
+  const dispatch = useDispatch()
+  const { stf_id, sale_his } = useSelector((state) => state.root.main);
+
   const navigation = useNavigation();
-  const [select, setSelect] = useState();
   const br = route.params?.Loc_id;
   const Key = route.params?.userid;
   const [branch, setBranch] = useState("branch");
@@ -41,9 +46,8 @@ const SaleHistory = (route) => {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
+
   const [dat, setDat] = useState();
-
-
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -78,14 +82,17 @@ const SaleHistory = (route) => {
       );
 
   }
-
-
+  const [load, setLoad] = useState(false);
+  const reload = () => {
+    setLoad(!load);
+  }
 
   const callHistoryAPI = () => {
     let params = {
-      stf_id: 11,
+      stf_id: stf_id,
       type: orderType,
-      date: orderDate,
+      date: `${date.getFullYear()}/${date.getMonth() +
+        1}/${date.getDate()}}`,
     };
 
     setLoading(true);
@@ -114,13 +121,33 @@ const SaleHistory = (route) => {
       // console.log(error);
     });
   };
-
+  const [a, setA] = useState(0);
   useEffect(() => {
-    callHistoryAPI();
-  }, []);
 
-  useEffect(() => {
-    callHistoryAPI();
+    if (a == 0) {
+      let params = {
+        stf_id: stf_id,
+        type: orderType,
+        date: null,
+      };
+      console.log("chalta ha bhai if ma b", a);
+      setLoading(true);
+      setA(1);
+      APIHandler.hitApi(SALE_HISTORY, 'POST', params).then(response => {
+        setLoading(false);
+        setSaleOrders(response);
+      }).catch(error => {
+        setLoading(false);
+        // console.log(error);
+      });
+
+    }
+    else {
+      callHistoryAPI();
+      console.log("chalta ha bhai else my b", a);
+
+    }
+
     var weekday = new Array(7);
     weekday[0] = "Sun";
     weekday[1] = "Mond";
@@ -150,6 +177,12 @@ const SaleHistory = (route) => {
 
     var dateStr = n + "." + m + " " + date;
     setDat(dateStr);
+  }, [date, load]);
+
+
+
+  useEffect(() => {
+    callHistoryAPI();
   }, [orderType, orderDate]);
 
   const renderOrderListHeader = () => {
@@ -188,6 +221,7 @@ const SaleHistory = (route) => {
     );
   };
 
+  const [t, setT] = useState();
   const renderOrdersItem = ({ item, index }) => {
     return (
       <TouchableOpacity style={{
@@ -199,14 +233,17 @@ const SaleHistory = (route) => {
         onPress={() => {
           callDetailAPI(item.id);
 
-          setTime(item.TimeStamp); setTable(item.table); setPax(item.member);
+          setTime(item.TimeStamp); setTable(item.table);
+          setPax(item.member);
           setPid(item.id);
+          setT(item.total);
+          Re_Print();
         }}>
         <Text style={{
           marginLeft: wp('2%'),
           padding: '2%',
           marginRight: wp('1%'),
-          borderRightWidth: 0.3, width: wp('4%'),
+          borderRightWidth: 0.3, width: wp('5%'),
           fontSize: wp('1.5%')
         }}>{index + 1}</Text>
 
@@ -286,15 +323,14 @@ const SaleHistory = (route) => {
     );
   }
   const updateIn = (s) => {
-    setSelect(s);
+    dispatch(SetSale_his(s));
   };
   const btn1 = () => <Text style={{ fontWeight: 'bold', fontSize: wp('1.5%'), color: 'white', marginRight: 10 }}>DINING</Text>
   const btn2 = () => <Text style={{ fontWeight: 'bold', fontSize: wp('1.5%'), color: 'white', marginLeft: 10, }}>TAKEAWAY</Text>
   const btn3 = () => <Text style={{ fontWeight: 'bold', fontSize: wp('1.5%'), color: 'white', marginLeft: 10, }}>DELIVERY</Text>
   const btn4 = () => <Text style={{ fontWeight: 'bold', fontSize: wp('1.5%'), color: 'white', marginLeft: 10, }}>PICKUP</Text>
 
-
-  const button = [{ element: btn1 }, { element: btn2 }, { element: btn3 }, { element: btn4 },];
+  const button = [{ element: btn1 }, { element: btn2 }, { element: btn3 }, { element: btn4 }];
   const TYPE_ARRAY = [
     {
       id: 1,
@@ -305,6 +341,28 @@ const SaleHistory = (route) => {
       value: "Take away",
     },
   ];
+
+
+
+  const [slip, setSlip] = useState();
+  const Re_Print = () => {
+    let params = {
+      trans_id: pid,
+    };
+    APIHandler.hitApi(Re_print, 'POST', params).then(response => {
+
+      setSlip(response.url);
+    }).catch(error => {
+
+      console.log(error);
+    });
+    console.log(slip)
+
+  }
+
+  const print = async printRemotePDF => {
+    await RNPrint.print({ filePath: slip })
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -324,7 +382,7 @@ const SaleHistory = (route) => {
         <View>
           <ButtonGroup
             onPress={updateIn}
-            selecte={select}
+            selecte={sale_his}
             buttons={button}
             containerStyle={{ height: hp('6%'), backgroundColor: 'red', width: "40%", marginLeft: wp('6%'), marginTop: hp('-7%'), borderColor: 'red', marginBottom: 2 }}
             selectedButtonStyle={{ backgroundColor: 'green' }}
@@ -350,7 +408,7 @@ const SaleHistory = (route) => {
         </View>
 
       </View>
-      { select == 0 ? <Dinein /> : select == 1 ? <Takeway branch={br} idUser={Key} /> : select == 2 ? <Delivery /> : select == 3 ? <Pickup /> :
+      { sale_his == 0 ? <MainDashboard /> : sale_his == 1 ? <Takeway branch={br} idUser={Key} /> : sale_his == 2 ? <Delivery /> : sale_his == 3 ? <Pickup /> : sale_his == 4 ?
         <View style={styles.container}>
 
           <View style={styles.centeredView}>
@@ -369,10 +427,13 @@ const SaleHistory = (route) => {
                   <View style={styles.innerModalView}>
                     <Image source={require('../assets/confirm.jpg')} style={{ width: wp('17.5%'), height: hp('32.7%') }} />
                     <Text style={{ fontSize: wp('2%'), marginBottom: wp('1%'), textAlign: "center", fontWeight: 'bold' }}>Confirm Refund</Text>
-                    <Text style={{ fontSize: wp('2%'), marginBottom: wp('1%'), textAlign: "center", color: 'red', fontWeight: 'bold' }}>$ 0.00</Text>
+                    <Text style={{ fontSize: wp('2%'), marginBottom: wp('1%'), textAlign: "center", color: 'red', fontWeight: 'bold' }}>$ {t}</Text>
                     <TouchableOpacity
                       style={[styles.button, styles.confirmbtn]}
-                      onPress={() => setModalOpen(!modalOpen)}
+                      onPress={() => {
+                        setModalOpen(!modalOpen);
+                        reload();
+                      }}
                     >
                       <Text style={styles.confirmText}>Confirm</Text>
                     </TouchableOpacity>
@@ -424,7 +485,7 @@ const SaleHistory = (route) => {
             </Modal>
           </View>
 
-          <ScrollView nestedScrollEnabled style={{ borderRightColor: 'grey', borderRightWidth: 0.5, flex: 0.5, backgroundColor: 'white' }}>
+          <View style={{ borderRightColor: 'grey', borderRightWidth: 0.5, flex: 0.5, backgroundColor: 'white' }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: '1%', margin: '2%' }}>
               <Text style={{ fontSize: wp('1%'), fontWeight: 'bold' }}>History</Text>
               {/* orderDate.getFullYear() + "-" + (orderDate.getMonth() + 1) + "-" + orderDate.getDate() */}
@@ -453,37 +514,37 @@ const SaleHistory = (route) => {
 
             }
 
-            <View style={{ borderWidth: 1, borderColor: '#d3d3d3', elevation: 1, height: hp('50%'), width: wp('64%') }}>
-              {saleOrders.length > 0 ?
-                <FlatList
-                  data={saleOrders}
-                  keyExtractor={item => item.key}
-                  renderItem={renderOrdersItem}
-                /> :
-                <Text style={{ alignSelf: 'center', color: 'grey' }}>No orders to show</Text>
-              }
+            <View style={{ borderWidth: 1, borderColor: '#d3d3d3', elevation: 1, height: hp('38%'), width: wp('64%') }}>
+
+              <FlatList
+                data={saleOrders.arr}
+                keyExtractor={item => item.key}
+                renderItem={renderOrdersItem}
+              />
+
+
             </View>
 
 
             <View style={{ borderBottomColor: '#d3d3d3', borderBottomWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
               <View style={{ alignItems: 'center', justifyContent: 'space-around', padding: '5%' }}>
                 <Text style={{ fontSize: wp('1%'), color: 'gray', fontWeight: 'bold' }}>Cash</Text>
-                <Text style={{ fontSize: wp('1%'), fontWeight: 'bold', color: '#696969' }}>$2500</Text>
+                <Text style={{ fontSize: wp('1%'), fontWeight: 'bold', color: '#696969' }}>${saleOrders.cash_amount}</Text>
               </View>
 
               <View style={{ alignItems: 'center', justifyContent: 'space-around', padding: '5%' }}>
                 <Text style={{ fontSize: wp('1%'), color: 'gray', fontWeight: 'bold' }}>Card</Text>
-                <Text style={{ fontSize: wp('1%'), fontWeight: 'bold', color: '#696969' }}>$2500</Text>
+                <Text style={{ fontSize: wp('1%'), fontWeight: 'bold', color: '#696969' }}>${saleOrders.card}</Text>
               </View>
 
               <View style={{ alignItems: 'center', justifyContent: 'space-around', padding: '5%' }}>
                 <Text style={{ fontSize: wp('1%'), color: 'gray', fontWeight: 'bold' }}>Float</Text>
-                <Text style={{ fontSize: wp('1%'), fontWeight: 'bold', color: '#696969' }}>$2500</Text>
+                <Text style={{ fontSize: wp('1%'), fontWeight: 'bold', color: '#696969' }}>${saleOrders.float}</Text>
               </View>
 
               <View style={{ alignItems: 'center', justifyContent: 'space-around', padding: '5%' }}>
                 <Text style={{ fontSize: wp('1%'), color: 'gray', fontWeight: 'bold' }}>Total Sale:</Text>
-                <Text style={{ fontSize: wp('1%'), fontWeight: 'bold', color: '#696969' }}>$2500</Text>
+                <Text style={{ fontSize: wp('1%'), fontWeight: 'bold', color: '#696969' }}>${saleOrders.total + saleOrders.card}</Text>
               </View>
             </View>
 
@@ -507,19 +568,21 @@ const SaleHistory = (route) => {
               </TouchableOpacity>
 
             </View>
-          </ScrollView>
+          </View>
 
 
           {/* OrderDetails */}
-          <ScrollView nestedScrollEnabled style={{ flex: 0.5, backgroundColor: 'white' }}>
+          <View style={{ flex: 0.5, backgroundColor: 'white' }}>
             <View style={{ flexDirection: 'row', height: hp('13%') }}>
               <Text style={{ fontSize: wp('1%'), padding: '2%', margin: '1%', fontWeight: 'bold' }}> {time}</Text>
+
               {value == 1 ?
                 <Text style={{ fontSize: wp('1%'), padding: '2%', margin: '1%', fontWeight: 'bold' }}> | </Text>
                 :
                 <Text style={{ fontSize: wp('1%'), padding: '2%', margin: '1%', fontWeight: 'bold', display: 'none' }}> | </Text>
               }
               <Text style={{ fontSize: wp('1%'), padding: '2%', margin: '1%', fontWeight: 'bold', color: 'red' }}>{table} </Text>
+
               {value == 1 ?
                 <Text style={{ fontSize: wp('1%'), padding: '2%', margin: '1%', fontWeight: 'bold' }}> | </Text>
                 :
@@ -528,7 +591,7 @@ const SaleHistory = (route) => {
               <Text style={{ fontSize: wp('1%'), padding: '2%', margin: '1%', fontWeight: 'bold' }}> {pax} </Text>
             </View>
 
-            <View style={{ marginLeft: wp('1%'), marginRight: wp('1%'), height: wp('25%') }}>
+            <View style={{ marginLeft: wp('1%'), marginRight: wp('1%'), height: wp('18%') }}>
 
 
               {orderDetails.length > 0 ?
@@ -545,16 +608,17 @@ const SaleHistory = (route) => {
 
             <View style={{ borderColor: '#d3d3d3', borderTopWidth: 1, flexDirection: 'row', padding: '2%' }}>
               <Text style={{ fontSize: wp('1%'), marginLeft: wp('1%'), marginRight: wp('1%') }}>Items:</Text>
-              <Text style={{ fontSize: wp('1%'), marginRight: wp('1%'), fontWeight: 'bold' }}>6</Text>
+              <Text style={{ fontSize: wp('1%'), marginRight: wp('1%'), fontWeight: 'bold' }}>{orderDetails.length}</Text>
               <Text style={{ fontSize: wp('1%'), marginRight: wp('1%') }}>|</Text>
               <Text style={{ fontSize: wp('1%'), marginRight: wp('1%') }}>Payment Method:</Text>
-              <Text style={{ fontSize: wp('1%'), marginRight: wp('1%'), fontWeight: 'bold' }}>VISA</Text>
+              <Text style={{ fontSize: wp('1%'), marginRight: wp('1%'), fontWeight: 'bold' }}>CASH</Text>
             </View>
 
             <View style={{ flexDirection: 'row', height: hp('50%'), width: wp('50%'), marginLeft: wp('2%') }}>
 
               <View style={{ height: hp('30%'), width: wp('20%') }}>
-                <TouchableOpacity style={styles.RePrintBtn}>
+                <TouchableOpacity style={styles.RePrintBtn}
+                  onPress={() => print()}>
                   <Text style={styles.RePrintText}>Re-Print</Text>
                 </TouchableOpacity>
 
@@ -562,7 +626,7 @@ const SaleHistory = (route) => {
                   onPress={() => {
                     setOrderDetails([]);
                     setModalOpen(true);
-                    tableReturn(id)
+                    tableReturn();
 
                   }}>
 
@@ -581,14 +645,14 @@ const SaleHistory = (route) => {
                   <Text style={{ fontSize: wp('1%'), color: '#696969', marginBottom: wp('0.7%') }}>$0.00</Text>
                   <Text style={{ fontSize: wp('1%'), color: '#696969', marginBottom: wp('0.7%') }}>$0.00</Text>
                   <Text style={{ fontSize: wp('1%'), color: '#696969', marginBottom: wp('0.7%') }}>$0.00</Text>
-                  <Text style={{ fontSize: wp('1%'), color: 'red', marginBottom: wp('0.7%'), fontWeight: 'bold' }}>$0.00</Text>
+                  <Text style={{ fontSize: wp('1%'), color: 'red', marginBottom: wp('0.7%'), fontWeight: 'bold' }}>${t}</Text>
                 </View>
 
               </View>
 
             </View>
 
-          </ScrollView>
+          </View>
 
           {isLoading && <CustomActivityIndicator />}
 
@@ -603,7 +667,7 @@ const SaleHistory = (route) => {
             />
           )}
         </View >
-      }
+        : null}
     </View >
   );
 };
